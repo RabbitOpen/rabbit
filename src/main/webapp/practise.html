@@ -1,0 +1,209 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter">
+		<meta content="rpc orm spouter">
+		<title>我爱编程</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<style type="text/css">
+			menu-bar {
+                float: right; color:#F8F8F8;
+                line-height: 24px; font-size: 14px;
+                margin-right: 15px;
+                font-family: 微软雅黑;
+                height: 24px;
+            }
+            .menu-bar ul {
+                list-style: none;
+                height: 24px;
+                margin: 10 10 10 30;
+            }
+            .menu-bar ul li{
+                float: left;
+                height: 24px;
+                 margin: 0 0 0 20;
+            }
+            .menu-bar ul li a {
+                float: left;
+                margin-left: 6px;
+                text-decoration: none;
+            }
+
+			.menu-item {
+				border-radius: 8px;
+				font-weight:bold;
+				border: 2px solid #14B1D1;
+				padding: 10px 8px;
+				color: #14B1D1;
+				cursor: pointer;
+				transition: background-color 1s;
+				-moz-transition: background-color 1s;
+				-webkit-transition: background-color 1s;
+				-o-transition: background-color 1s;
+				text-decoration: none;
+			}
+			a.menu-item:hover {
+				background-color: #14B1D1;
+				color: white;
+				text-decoration: none;
+			}
+
+			div.equation {
+				width: 280px;
+				height: 30px;
+				line-height: 30px;
+				float: left;
+			}
+			div.equation-result {
+				width: 150px;
+				height: 30px;
+				line-height: 30px;
+				float: left;
+			}
+
+			div.real-result {
+				width: 80px;
+				height: 30px;
+				line-height: 30px;
+				float: left;
+			}
+
+			.real-result label {
+				display:none;
+			}
+
+			div.equation-content {
+				border-radius: 8px;
+				border: 2px solid #14B1D1;
+				height: 300px;
+				width: 1070px;
+				margin: 25px 20px;
+				padding: 10px;
+				left: 50%;
+				position: relative;
+				margin-left: -535px;
+			}
+
+			.remind {
+				border-color: fuchsia;
+			}
+
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA; overflow-y: scroll;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left; padding-left: 200px;">
+					<h3>加油熊宝！</h3>
+				</div>
+
+			</div>
+
+		</div>
+        <div class="menu-bar">
+            <ul>
+                <li class="item start">
+                    <a class = "menu-item generate">
+                        开始做题 >>
+                    </a>
+                </li>
+                <li class="item"><a class = "menu-item commit">做完交卷 >></a></li>
+                <li class="item"><a class = "menu-item" href="./history">历史答题 >></a></li>
+            </ul>
+        </div>
+		<input id="practiseId" style="display:none"></input>
+        <div class="equation-content">
+        </div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+
+		<div>
+			<div class="footer">
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(function(){
+				$("a.generate").click(function() {
+					$.post("./generate", {}, function(data) {
+						if (data.length == 0) {
+							return;
+						}
+						$("#practiseId").val(data[0].practiseId);
+						$(".equation-result input").unbind("focus");
+						$(".equation-content").empty();
+						for (var i = 0; i < data.length; i++) {
+							$(".equation-content").append('<div class="equation"><font color="fuchsia">' + (i + 1) + ".</font> "+ data[i].text + '</div>');
+							$(".equation-content").append('<div class="equation-result">x&nbsp;=&nbsp;' +
+								'<input equation-id="' + data[i].id + '" type="text" style="width:120px" placeholder="--请输入正确答案--"/></div>');
+							$(".equation-content").append('<div class="real-result">&nbsp;<label>' + data[i].finalResult + '</label></div>');
+						}
+						$(".equation-content").height(450);
+						$(".equation-result input").unbind("focus").bind("focus", function() {
+							$(this).removeClass("remind");
+						});
+					});
+				});
+
+				$("a.commit").click(function() {
+					var filled = true;
+					$(".equation-result input").each(function() {
+						if ("" == $.trim($(this).val())) {
+							filled = false;
+							$(this).addClass("remind")
+							return;
+						}
+					});
+					if (filled) {
+						var result = '';
+						$(".equation-content input").each(function() {
+							result = result + $(this).attr("equation-id") + ":" + $(this).val() + ":" + $(this).parent().next().children("label").html() + ","
+						});
+						$.post("./commit", {"result": result, "practiseId": $("#practiseId").val()}, function(data) {
+							if ('success' == data) {
+								$(".real-result label").show();
+								$(".equation-result input").attr("disabled", "disabled");
+							}
+
+							var ok = true;
+							// 检查答案
+							$(".equation-content input").each(function() {
+								if ($(this).val() != $(this).parent().next().children("label").html()) {
+									ok = false;
+									$(this).addClass("remind");
+								}
+							});
+							if (ok) {
+								window.confirm("恭喜你，全部正确！");
+							} else {
+								window.confirm("很遗憾，没能得到满分！");
+							}
+						});
+					}
+				});
+			})
+			
+		</script>
+
+	</body>
+
+</html>

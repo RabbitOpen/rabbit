@@ -1,0 +1,338 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>我爱编程</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+        <script src="./js/bv.js"></script>
+        <script src="./highcharts/highcharts.js"></script>
+        <script src="./highcharts/modules/exporting.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+        <link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+        <link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+        <link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+        <link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+        <link rel="stylesheet" type="text/css" href="./css/font.css">
+        <link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("datasourcetest" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+				$(".xml a").css({
+					"text-decoration": "none"
+				})
+			})		
+		</script>
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.blue{
+				color: blue;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Write less do more</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div>
+				<div class="left nav" style="z-index: 9999; position: relative;">
+					<ul>
+						<li id="datasourcetest">数据源性能测试</li>
+						<li id="innertest">框架间性能测试</li>
+					</ul>
+				</div>
+				<div class="right containers">
+				    <div class="datasourcetest capter">
+                        <div style="position: relative;">
+                            <div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+                                                                                    数据源性能测试
+                            </div>
+                        </div>
+                        <div style="text-indent: 2em; line-height: 24px;">
+                                                                            本次测试是在mysql5.7下进行的, 测试相同线程数，不同连接数的场景。测试时使用的是PreparedStatement进行sql操作。测试SQL代码如下：
+                        </div>
+                        <pre class="brush:sql">
+                            SELECT 
+                                A.*, B.* 
+                            FROM 
+                                T_USER A 
+                            LEFT JOIN 
+                                T_ORG B 
+                            ON 
+                                A.ORG_ID = B.ID 
+                            WHERE A.ID = 1
+                        </pre>
+                        <div id="datasourcetest-container" style="margin-top:10px;">
+                            
+                        </div>
+                        <script type="text/javascript">
+	                        Highcharts.chart('datasourcetest-container', {
+	                           
+	                            title: {
+	                                text: 'RabbitORM-V2.7.5 使用不同数据源测试结果'
+	                            },
+	                            exporting: { 
+	                            	enabled: false        //隐藏导出图片  
+	                            },
+	                            credits: {  
+	                                enabled: false     //不显示LOGO 
+	                            },  
+	                            subtitle: {
+	                                text: '50个线程并发,每个线程循环10000次查询'
+	                            },
+	                            xAxis: {
+	                                categories: ['10', '20', '30', '40', '50'],
+	                                tickmarkPlacement: 'on',
+	                                title: {
+	                                	text: '最大并发连接数'
+	                                }
+	                            },
+	                            yAxis: {
+	                                title: {
+	                                    text: '运行耗时(秒)'
+	                                },
+	                                labels: {
+	                                    formatter: function () {
+	                                        return this.value / 1000;
+	                                    }
+	                                }
+	                            },
+	                            tooltip: {
+	                                split: true,
+	                                valueSuffix: ' ms'
+	                            },
+	                            plotOptions: {
+	                                area: {
+	                                    stacking: 'normal',
+	                                    lineColor: '#666666',
+	                                    lineWidth: 1,
+	                                    marker: {
+	                                        lineWidth: 1,
+	                                        lineColor: '#666666'
+	                                    }
+	                                }
+	                            },
+	                            series: [{
+	                                name: 'RabbitDataSource-V2.7.5',
+	                                data: [5195, 7753, 11185, 14227, 17209]
+	                            }, {
+	                                name: 'Dbcp-V2.1',
+	                                data: [6497, 10846, 15538, 19562, 24180]
+	                            }, {
+	                                name: 'C3p0-V0.9.5-pre10',
+	                                data: [5977, 9612, 12467, 15134, 18584]
+	                            }, {
+	                                name: 'Hikari-V2.6.0',
+	                                data: [8830, 14149, 19049, 26036, 31999]
+	                            }]
+	                        });
+						</script> 
+                    </div>	
+                    <div style="text-indent: 2em; line-height: 24px;">
+                                                                原计划是测试相同数据库连接在不同线程数下差别的，可是dbcp和hikari在100线程，10连接时经常出现获取连接超时的异常，大写的尴尬。。。<br/>
+                    </div>
+                    <div style="text-indent: 2em; line-height: 24px;">
+                                                                单从性能数据来看，rabbit和c3p0是差不多的。    需要说明的是hikari在对Statement的访问速度还是很快的，和c3p0以及rabbit的测试结果非常接近。
+                                                                遗憾的是出于安全和性能的考量，大部分ORM框架都使用的是PreparedStatement进行SQL操作。                                   
+                    </div>
+	                <div class="innertest capter">
+	                    <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+	                                                                 框架间性能测试
+	                    </div>
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                                                                  本次测试的是包括内置数据源RabbitDataSource在内的4个数据源在rabbit框架以及mybatis框架下的性能表现。
+	                                                                  测试条件为50个线程，初始连接数为10个，最大30个数据库连接，每个线程循环请求10000次。测试的SQL同上。
+	                    </div>
+	                    <div id="inner-container" style="margin-top:10px;">
+                            
+                        </div>
+                        <script type="text/javascript">
+	                        Highcharts.chart('inner-container', {
+	                            chart: {
+	                                type: 'bar'
+	                            },
+	                            exporting: { 
+                                    enabled: false        //隐藏导出图片  
+                                },
+                                credits: {  
+                                    enabled: false     //不显示LOGO 
+                                }, 
+	                            title: {
+	                                text: '框架间不同数据源性能测试结果'
+	                            },
+	                            subtitle: {
+	                                text: '50个线程并发循环10000次查询'
+	                            },
+	                            xAxis: {
+	                                categories: ['RabbitDataSource-V2.7.5', 'Dbcp-V2.1', 'C3p0-V0.9.5-pre10', 'Hikari-V2.6.0'],
+	                                title: {
+	                                    text: null
+	                                }
+	                            },
+	                            yAxis: {
+	                                min: 0,
+	                                title: {
+	                                    text: '执行时长 (ms)',
+	                                    align: 'high'
+	                                },
+	                                labels: {
+	                                    overflow: 'justify'
+	                                }
+	                            },
+	                            tooltip: {
+	                                valueSuffix: ' ms'
+	                            },
+	                            plotOptions: {
+	                                bar: {
+	                                    dataLabels: {
+	                                        enabled: true
+	                                    }
+	                                }
+	                            },
+	                            legend: {
+	                                layout: 'vertical',
+	                                align: 'right',
+	                                verticalAlign: 'top',
+	                                x: -40,
+	                                y: 80,
+	                                floating: true,
+	                                borderWidth: 1,
+	                                backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+	                                shadow: true
+	                            },
+	                            credits: {
+	                                enabled: false
+	                            },
+	                            series: [{
+		                            	name: 'RabbitORM-V2.7.5',
+		                                data: [17209, 24180, 18584, 31999]
+	                                },{
+	                                	name: 'MyBatis-V3.2.1',
+                                        data: [18569, 46099, 19282, 35455]
+	                                }
+	                            ]
+	                        });
+                        </script> 	
+	                </div>
+	                <div style="text-indent: 2em; line-height: 24px;">
+                                                                  从测试结果可以看出，除了dbcp数据源以外，Rabbit ORM框架和mybatis框架裸测时的性能是差不多的。
+                         <span class="blue">这个结果也可以说明Rabbit ORM作为一个全自动ORM框架来说性能是不错的。</span>
+                    </div>    
+                </div>
+			</div>
+			
+			<script type="text/javascript">
+				$(function(){
+					window.hidetimer = null;
+					$("li.center a.center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+						$(this).closest("li.center").find(".project-center").fadeIn(500);
+					}, function(){
+						var pro = $(this).closest("li.center").find(".project-center");
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 100);
+					});
+					$(".project-center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+					},function(){
+						var pro = $(this);
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 500);
+					})
+				})
+				
+			</script>	
+			<div class="footer">
+				<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 999; position:relative; overflow:hidden;">
+                    <div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+                </div> -->
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+	
+</html>

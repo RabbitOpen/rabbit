@@ -1,0 +1,403 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta content="Rabbit rpc orm spouter">
+        <meta content="Rabbit 分表分库  读写分离 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+        <meta content="Rabbit ORM">
+        <meta content="Rabbit RPC">
+        <meta content="Rabbit Spouter 分布式即时推送技术">
+        <meta content="rpc orm spouter">
+        <title>RABBIT ORM2 分表分库  读写分离</title>
+        <script src="./js/jquery-1.9.1.min.js"></script>
+        <script src="./js/bv.js"></script>
+        <script src="./highcharts/highcharts.js"></script>
+        <script src="./highcharts/modules/exporting.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+        <link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+        <link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+        <link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+        <link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+        <link rel="stylesheet" type="text/css" href="./css/font.css">
+        <link rel="stylesheet" type="text/css" href="./css/orm.css">
+        <script type="text/javascript">
+            $(function(){
+                $(".content li").each(function(){
+                    $(this).click(function(){
+                        if(!$(this).hasClass("selected")){
+                            $(".content .selected").removeClass("selected");
+                            $(this).addClass("selected");
+                        }
+                        if("datasourcetest" == $(this).attr("id")){
+                            $(document).scrollTop(0);
+                            return;
+                        }
+                        if($("." + $(this).attr("id")).length != 0){
+                            $(document).scrollTop($("." + $(this).attr("id")).offset().top);
+                        }
+                    });
+                });
+                SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+                SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+                SyntaxHighlighter.config.bloggerMode = true; 
+                SyntaxHighlighter.config.stripBrs = true; 
+                SyntaxHighlighter.highlight();
+                $(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+                $("img").css("border", "1px solid #6CE26C");
+                $("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+                $(".xml a").css({
+                    "text-decoration": "none"
+                })
+            })      
+        </script>
+        <style type="text/css">
+            .resource{
+                margin-right: -10px;
+            }
+            .blue{
+                color: blue;
+            }
+        </style>
+    </head>
+    <body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+        <div class="header">
+            <div class="logo"></div>
+            <div class="title" style="margin-left: -500px;">
+                <div class="welcome outlinedB" style="float: left"><h3>Write less do more</h3></div>
+                <div class="resource">
+                    <ul>
+                        <li class="item"><a href="./">首页</a></li>
+                        <li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+                        <li class="item center" style="position: relative;">
+                            <div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+                            <div class="project-center">
+                                <ul>
+                                    <li><a href="./orm2">Rabbit ORM</a></li>
+                                    <li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+                                    <li><a href="./rpc">Rabbit RPC</a></li>
+                                    <li><a href="./spouter">Rabbit Spouter</a></li>
+                                    <li><a href="./spoutwriter">Spout Writer</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="item"><a href="./contact">联系我</a></li>
+                    </ul>   
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div>
+                <div class="left nav" style="z-index: 9999; position: relative;">
+                    <ul>
+                        <li id="splited">分表操作</li>
+                        <li id="readwrite">分库操作</li>
+                    </ul>
+                </div>
+                <div class="right containers">
+                    <div class="splited capter">
+                        <div style="position: relative;">
+                            <div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+                                                                                    分表操作
+                            </div>
+                        </div>
+                        <div style="text-indent: 2em; line-height: 24px;">
+                                                                            从V2.2开始，所有的版本都支持分表功能。要实现分表功能，需要在实体类注解上申明分表策略，如下：
+                        </div>
+                        <pre class="brush:java">
+                        &nbsp;
+    @Entity(value = "T_SHARD_USER", policy=DemoShardingPolicy.class)
+    public class ShardingUser {
+    
+        @PrimaryKey()
+        @Column("ID")
+        private Long id;
+        
+        //名字
+        @Column("NAME")
+        private String name;
+    
+        @Column("GENDER")
+        private String gender;
+        
+    
+                        </pre>
+                    </div>  
+                    <div style="text-indent: 2em; line-height: 24px;">
+                                                                注解中的"DemoShardingPolicy" 是 "rabbit.open.orm.shard.ShardingPolicy"的子类。ShardingPolicy默认不分表，DemoShardingPolicy的实现如下
+                    </div>
+                    <pre class="brush:java" style="text-indent: 0em !important;">                                       
+package sharding.test.table.policy;
+
+import java.util.List;
+
+import rabbit.open.orm.common.annotation.Entity;
+import rabbit.open.orm.common.shard.ShardFactor;
+import rabbit.open.orm.common.shard.ShardingPolicy;
+import sharding.test.table.exception.UnKnownShardException;
+
+/**
+ * Description  自定义分表策略
+ */
+public class DemoShardingPolicy extends ShardingPolicy {
+    
+    /**
+     * 根据主键分表(奇偶 分表)
+     * @param clz           实体类
+     * @param tableName     原始表名
+     * @param factors       分片条件， dml操作传递进来的参数封装对象
+     * @return              真实的分片表名
+     */
+    @Override
+    public String getShardingTable(Class&lt?&gt clz, String tableName, List&ltShardFactor&gt factors) {
+        if (!ShardingPolicy.class.equals(clz.getAnnotation(Entity.class).policy())) {
+            if (containShardFactor(factors)) {
+                return getShardingTableName(tableName, factors);
+            } else {
+                // 该操作无法确认分表信息，应该从业务上规避
+                throw new UnKnownShardException("无法定位分表的操作被指定了");
+            }
+        } else {
+            return super.getShardingTable(clz, tableName, factors);
+        }
+    }
+    
+    /**
+     * 根据分表条件获取对应的分区表
+     * @param tableName
+     * @param factors
+     * @return
+     */
+    private String getShardingTableName(String tableName, List&ltShardFactor&gt factors) {
+        for (ShardFactor sf : factors) {
+            if ("id".equals(sf.getField().getName())) {
+                return tableName + (((Long) sf.getValue()).longValue() % 2);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 判断DML操作是否包含分表条件
+     * @param factors
+     * @return
+     */
+    private boolean containShardFactor(List&ltShardFactor&gt factors) {
+        for (ShardFactor sf : factors) {
+            if ("id".equals(sf.getField().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
+}
+                                                                
+                    </pre>    
+                    <div style="text-indent: 2em; line-height: 24px;">
+                                                                申明成分表的表创建DML对象时，rabbit会根据分表策略自动找到对应的表。但是进行dml操作时需要注意几点：
+                    </div>
+                    <div style="text-indent: 2em; line-height: 24px;">
+                        1、 一个dml操作不能跨分表，一个事务里面允许操作多个分表。                                
+                    </div>
+                    <div style="text-indent: 2em; line-height: 24px;">
+                        2、 创建分片表实体的DML对象时，可以关联操作其它非分片表。   但是不能被其它非分片表关联。                             
+                    </div>
+                    <div style="text-indent: 2em; line-height: 24px;">
+                        3、 分表策略对SQLQuery、NamedQuery无效。                             
+                    </div>
+                    
+                    <div class="readwrite capter">
+                        <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+                                                                     分库操作
+                        </div>
+                        <div style="text-indent: 2em; line-height: 24px;">
+                                                                      从V2.3以后rabbit支持分库操作。SessionFactory对象中新增了以后优先级高于dataSource的属性"combinedDataSource"。只需要注入该数据源即可实现分库操作。 
+                                                                      下面的配置实现了一个读写分离的配置。
+                        </div>
+                        <pre class="brush:xml">
+                         &nbsp;
+    &lt!-- 配置读数据源 -->
+    &ltbean id="read" class="rabbit.open.orm.datasource.RabbitDataSource">
+        &ltproperty name="driverClass">
+            &ltvalue>${jdbc.driverName}&lt/value>
+        &lt/property>
+        &ltproperty name="url">
+            &ltvalue>${jdbc.url.read}&lt/value>
+        &lt/property>
+        &ltproperty name="username">
+            &ltvalue>${jdbc.username}&lt/value>
+        &lt/property>
+        &ltproperty name="password">
+            &ltvalue>${jdbc.password}&lt/value>
+        &lt/property>
+        &ltproperty name="maxSize">
+            &ltvalue>${jdbc.maxSize}&lt/value>
+        &lt/property>
+        &ltproperty name="minSize">
+            &ltvalue>${jdbc.minSize}&lt/value>
+        &lt/property>
+        &ltproperty name="maxIdle">
+            &ltvalue>${jdbc.maxIdle}&lt/value>
+        &lt/property>
+        &ltproperty name="maxCachedStmt">
+            &ltvalue>1000&lt/value>
+        &lt/property>
+    &lt/bean> 
+
+    &lt!-- 配置写数据源 -->
+    &ltbean id="write" class="rabbit.open.orm.datasource.RabbitDataSource">
+        &ltproperty name="driverClass">
+            &ltvalue>${jdbc.driverName}&lt/value>
+        &lt/property>
+        &ltproperty name="url">
+            &ltvalue>${jdbc.url.write}&lt/value>
+        &lt/property>
+        &ltproperty name="username">
+            &ltvalue>${jdbc.username}&lt/value>
+        &lt/property>
+        &ltproperty name="password">
+            &ltvalue>${jdbc.password}&lt/value>
+        &lt/property>
+        &ltproperty name="maxSize">
+            &ltvalue>${jdbc.maxSize}&lt/value>
+        &lt/property>
+        &ltproperty name="minSize">
+            &ltvalue>${jdbc.minSize}&lt/value>
+        &lt/property>
+        &ltproperty name="maxIdle">
+            &ltvalue>${jdbc.maxIdle}&lt/value>
+        &lt/property>
+        &ltproperty name="maxCachedStmt">
+            &ltvalue>1000&lt/value>
+        &lt/property>
+    &lt/bean> 
+
+    &lt!-- 配置复合数据源   -->
+    &ltbean id="combinedDataSource" class="rabbit.open.orm.core.datasource.ReadWriteSeperatedDataSource">
+        &ltproperty name="readSource" ref="read"/>
+        &ltproperty name="writeSource" ref="write"/>
+    &lt/bean>
+    
+    &lt!-- 配置SessionFactory -->
+    &ltbean id="readWriteSplitedSessionFactory" class="rabbit.open.orm.core.dml.SessionFactory">
+        &ltproperty name="showSql">
+            &ltvalue>${jdbc.showSql}&lt/value>
+        &lt/property>
+        &ltproperty name="formatSql">
+            &ltvalue>${jdbc.formatSql}&lt/value>
+        &lt/property>
+        &lt!-- 复合数据源暂时不支持自动ddl  -->
+        &ltproperty name="ddl">
+            &ltvalue>${jdbc.ddl}&lt/value>
+        &lt/property>
+        &ltproperty name="dialect">
+            &ltvalue>${jdbc.dialect}&lt/value>
+        &lt/property>
+        &ltproperty name="packages2Scan">
+            &ltvalue>${jdbc.packages}&lt/value>
+        &lt/property>
+        &ltproperty name="maskPreparedSql">
+            &ltvalue>true&lt/value>
+        &lt/property>
+        &lt!-- 配置复合数据源，该数据源优先级高于 datasource -->
+        &ltproperty name="combinedDataSource" ref="combinedDataSource" />
+    &lt/bean>
+                        </pre>
+                    </div>
+                    <div style="text-indent: 2em; line-height: 24px;">
+                        开发人员可以定义自己的复合数据源，只需要实现接口"rabbit.open.orm.core.dml.CombinedDataSource"即可。复合数据源接口描述如下：
+                    </div>   
+                    <pre class="brush:java">
+                    &nbsp;
+public interface CombinedDataSource {
+
+    /**
+     * <b>Description       DML操作时, 获取数据源</b>
+     * @param entityClz     实体类
+     * @param tableName     当前操作的表名         
+     *                      当操作中间表时该值是主表的名字， 所以中间表应该和主表在一个库
+     *                      执行SQLQuery时， tableName 为空
+     *                      执行NamedQuery时，tableName 为实体类Entity注解中申明表名
+     * @param type
+     * @return
+     */
+    public abstract DataSource getDataSource(Class&lt?> entityClz, String tableName, DMLType type);
+	
+	/**
+     * <b>@description  获取所有数据源</b>
+     * @return
+     */
+    public abstract List&ltDataSource> getAllDataSources();
+
+}
+&nbsp;
+
+                    </pre> 
+                </div>
+            </div>
+            
+            <script type="text/javascript">
+                $(function(){
+                    window.hidetimer = null;
+                    $("li.center a.center").hover(function(){
+                        if(null != window.hidetimer){
+                            clearTimeout(window.hidetimer);
+                        }
+                        $(this).closest("li.center").find(".project-center").fadeIn(500);
+                    }, function(){
+                        var pro = $(this).closest("li.center").find(".project-center");
+                        window.hidetimer = setTimeout(function(){
+                            pro.fadeOut(500);
+                        }, 100);
+                    });
+                    $(".project-center").hover(function(){
+                        if(null != window.hidetimer){
+                            clearTimeout(window.hidetimer);
+                        }
+                    },function(){
+                        var pro = $(this);
+                        window.hidetimer = setTimeout(function(){
+                            pro.fadeOut(500);
+                        }, 500);
+                    })
+                })
+                
+            </script>   
+            <div class="footer">
+                <!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 999; position:relative; overflow:hidden;">
+                    <div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+                </div> -->
+                <div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+                    <ul class="footer">
+                        <li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+                        <li>abbit team 709498191@qq.com </li>
+                    </ul>
+                </div>
+                <div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+                    <a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+                    蜀ICP备17028451号-1
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- <script type="text/javascript">
+            (function(){
+                var bp = document.createElement('script');
+                var curProtocol = window.location.protocol.split(':')[0];
+                if (curProtocol === 'https'){
+                    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+                }else{
+                    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+                }
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(bp, s);
+            })();
+            
+        </script> -->
+    </body>
+    
+</html>

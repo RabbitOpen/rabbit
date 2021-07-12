@@ -1,0 +1,340 @@
+<html>
+	<head>
+		<meta name="baidu-site-verification" content="cRG1K9Udyv" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 分表分库  读写分离 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter">
+		<meta content="rpc orm spouter">
+		<title>我爱编程</title>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		
+		
+		<style type="text/css">
+			.welcome{
+				font-family: 微软雅黑;
+				font-size: 16px;
+				height:120px;
+				line-height:120px;
+				margin-right:50px;
+				color:white;
+				float: left;
+			}
+			div{
+				color: #666;
+			}
+			
+			.content{
+				width: 1000px;
+				margin: 20px 0px;
+				left: 50%;
+				position:relative;
+				margin-left: -500px;
+			}
+
+			.title{
+				width: 1000px;
+				left: 50%;
+				position:absolute;
+				margin-left: -480px;
+			}
+			
+			.content .project{
+				font-family: 微软雅黑;
+				font-size: 16px;
+				width:460px;
+				margin: 0px 20px;
+				background-color: white;
+			    border-radius: 5px 5px 0 0;
+			}
+			.content .left{
+				float: left;
+			}
+			.content .right{
+				float: right;
+			}
+			.project header{
+				text-align: center; 
+				border-radius: 8px 8px 0 0;
+				height: 90px;
+				line-height: 90px;
+				color: white;
+			}
+			.content ul{
+				list-style: none;
+				list-style-image: none;
+				margin: 0px;
+				padding: 0px;
+				padding-bottom: 10px;
+			}
+			
+			.content ul li{
+				overflow:visible;
+				display:inline-block;
+				height: 105px;
+				padding: 15px 25px 0 25px;
+				border-top: 1px solid #DADADA; 
+				transition: background-color 1s;
+				-moz-transition: background-color 1s; 
+				-webkit-transition: background-color 1s; 
+				-o-transition: background-color 1s; 
+				text-decoration: none;
+			}
+			div p{
+				margin: 5px 0px;
+			}
+			.footer{
+				width: 100%;
+				text-align: center;
+				clear: both;
+				padding: 50px 0px 20px 0px;
+			}
+			.getting-start{
+				border-radius: 8px; 
+				font-weight:bold;
+				border: 2px solid #14B1D1; 
+				padding: 10px 8px; 
+				color: #14B1D1; 
+				cursor: pointer;
+				transition: background-color 1s;
+				-moz-transition: background-color 1s; 
+				-webkit-transition: background-color 1s; 
+				-o-transition: background-color 1s; 
+				text-decoration: none;
+			}
+			a.getting-start:hover{
+				background-color: #14B1D1;
+				color: white;
+				text-decoration: none;
+			}
+			
+			.project ul li:hover{
+				background-color: #eFeFeF;
+			}
+			.project ul li div{
+				transition: color 100ms;
+				-moz-transition: color 100ms; 
+				-webkit-transition: color 100ms;
+				-o-transition: color 100ms;
+				text-decoration: none;
+			}
+			
+			.project ul li:hover div{
+				color: #14B1D1;
+			}
+		</style>
+		
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left; padding-left: 20px;">
+					<h3>Welcome to Rabbit</h3>
+				</div>
+				<div class="resource" style="margin-right: 9px;">
+					<ul>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		
+		<div class="content">
+			<div class="project left">
+				<header class="project-header">
+					<h3 class="title-font orm">O R M</h3>
+				</header>
+ 				<section>
+	 				<ul>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">分表分库</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							通过扩展注解和策略的方式无缝实现分表分库、读写分离操作。
+	 						</div>
+	 					</li>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">全自动化</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							完善的注解体系使您轻松实现实体类和表的映射。
+	 							<p>丰富而又强大的API完成了对象级数据的查询和包装。</p>
+	 						</div>
+	 					</li>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">事务支持</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							2.0开始无缝支持Spring事务注解、废弃原有自定义的事务注解。
+	 						</div>
+	 					</li>
+	 					<li>
+                            <div class="left"><h4 class="hsl">NOSQL</h4></div>
+                            <div class="right" style="width: 70%;">
+                                完整的查询解决方案, 让您和不易维护的SQL语句开发说再见！
+                                <p>丰富而又强大的API支撑各种复杂场景下的SQL查询。</p>
+                            </div>
+                        </li>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">多库支持</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							<div>
+		 							目前只支持 ORACLE、MYSQL、DB2、SQLSERVER、SQLITE3 五种数据库。
+	 							</div>
+	 							<div>
+	 								<p style="float: right; margin-right: 10px; margin-top: 30px;">
+										<a class="getting-start" href="./orm2">
+											Getting Started >>
+										</a>	 							
+	 								</p>
+	 							</div>
+	 						</div>
+	 					</li>
+	 				</ul>
+ 				</section>
+			</div>
+			<div class="project right">
+				<header class="project-header">
+					<h3 class="title-font rpc">R P C</h3>
+				</header>
+ 				<section>
+	 				<ul>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">可靠性保证</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							内置错误重试机制。网络闪断或者服务器挂掉都不会影响当前调用的执行。
+	 							只要还有一台服务器能够提供服务, 当前调用就一定能成功。
+	 						</div>
+	 					</li>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">权限认证</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							内置权限认证扩展机制, 只需简单开发就能实现认证、鉴权等功能。
+	 							<p></p>
+	 						</div>
+	 					</li>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">负载均衡</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							内置负载均衡功能, 客户端会选择连接数最少的节点提供服务。
+	 							<p>
+	 								内置服务发现功能, 客户端会动态感知到服务节点的新增或者移除。
+	 							</p>
+	 						</div>
+	 					</li>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">异步推送</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							2.0以后的版本提供了spouter模块，支持分布式、分片、异步推送服务。
+	 						</div>
+	 					</li>
+	 					<li>
+	 						<div class="left"><h4 class="hsl">事件机制</h4></div>
+	 						<div class="right" style="width: 70%;">
+	 							提供可定制化的事件接口, 方便对方法调用、链路建立、断开等事件进行监控。
+	 						</div>
+	 						<div>
+ 								<p style="float: right; margin-right: 10px; margin-top: 30px;">
+									<a class="getting-start" href="./rpc">
+										Getting Started >>
+									</a>	 							
+ 								</p>
+ 							</div>
+	 					</li>
+	 				</ul>
+ 				</section>
+			</div>
+			<div class="footer">
+				<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 9999; position:relative; overflow:hidden;">
+					<div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+				</div> -->
+				<div style="font-size: 16px; height:30px; overflow:hidden; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 0px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(function(){
+				var max = 0;
+				$(".project").each(function(){
+					if($(this).height() > max){
+						max = $(this).height();
+					}
+				});
+				$(".project").each(function(){
+					$(this).height(max);
+					var h = max - $(this).find("ul").height();
+					$(this).find("li:last").height($(this).find("li:last").height() + h - 90);
+				});
+				
+				window.hidetimer = null;
+				$("li.center a.center").hover(function(){
+					if(null != window.hidetimer){
+						clearTimeout(window.hidetimer);
+					}
+					$(this).closest("li.center").find(".project-center").fadeIn(500);
+				}, function(){
+					var pro = $(this).closest("li.center").find(".project-center");
+					window.hidetimer = setTimeout(function(){
+						pro.fadeOut(500);
+					}, 100);
+				});
+				$(".project-center").hover(function(){
+					if(null != window.hidetimer){
+						clearTimeout(window.hidetimer);
+					}
+				},function(){
+					var pro = $(this);
+					window.hidetimer = setTimeout(function(){
+						pro.fadeOut(500);
+					}, 500);
+				})
+			})
+			
+		</script>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+	
+</html>

@@ -1,0 +1,592 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源中心 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>Spout Writer 分布式切片推送服务</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushBash.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("start" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+				$(".xml a").css({
+					"text-decoration": "none",
+					"color": "blue"
+				})
+				$("a:contains('rabbit-open')").css("color", "fuchsia");
+			})		
+		</script>
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.capter section{
+				line-height: 24px;
+			}
+			.i2em{
+				text-indent: 2em;
+			}
+			.pl15{
+				padding-left: 25px !important;
+			}
+			.blue{
+				color: blue;
+			}
+			.gray{
+				color: gray;
+			}
+			div.cell{
+				float: left;
+				line-height: 24px;
+			}
+			div.p15{
+				width: 24%;
+			}
+			div.p85{
+				width: 76%;
+				text-indent: 0;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Spout Writer</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		
+		<div class="content">
+			<div>
+				<div class="left nav">
+					<ul>
+						<li id="start">项目简介</li>
+						<li id="Server">开发流程</li>
+						<li id="mode">工作原理</li>
+						<li id="tag">开发须知</li>
+					</ul>
+				</div>
+				<div class="right containers">
+					<div class="start capter">
+						<div style="position: relative;">
+							<div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+								项目简介
+							</div>
+						</div>
+						<section class="i2em">
+							Spout Writer是Rabbit Spouter体系的客户端。Spout Writer允许开发者通过api向Spouter体系中特定的客户端集群发送数据信息。是对Rabbit Spouter体系的补充和完善。
+							目前推出的最新版本为3.0。maven依赖如下：
+						</section>
+						<pre class="brush:xml">
+							&nbsp;
+&ltdependency>
+	&ltgroupId>rabbit.open&lt/groupId>
+	&ltartifactId>spouter&lt/artifactId>
+	&ltversion>3.0&lt/version>
+&lt/dependency>
+
+&lt!-- 只有3.0 以上的rpc才支持Spout Writer技术 -->
+&ltdependency>
+	&ltgroupId>rabbit.open&lt/groupId>
+	&ltartifactId>rpc&lt/artifactId>
+	&ltversion>3.0&lt/version>
+&lt/dependency>
+						</pre>
+						<section class="i2em">
+							使用之前请记得先在maven中添加rabbit的配置信息：
+						</section>
+						<pre class="brush:xml">
+								&nbsp;
+&ltrepository>
+	&ltid>rabbit-open&lt/id>
+	&lturl>http://www.rabbit-open.top/nexus/content/groups/public/&lt/url>
+	&ltreleases>
+		&ltenabled>true&lt/enabled>
+	&lt/releases>
+	&ltsnapshots>
+		&ltenabled>false&lt/enabled>
+	&lt/snapshots>
+&lt/repository>
+						</pre>
+					</div>
+					<div class="Server capter">
+						<p>开发流程</p>
+						<section class="i2em">
+							SpoutWriter是整个Spouter体系的客户端。 所以我们需要先开发一个Spouter，Spouter的配置如下：
+						</section>
+						<section>
+							<pre class="brush:xml">
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.rabbit-open.top/schema/rabbit"
+	xmlns:rs="http://www.rabbit-open.top/schema/spouter"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      	   http://www.springframework.org/schema/context
+      	   http://www.springframework.org/schema/context/spring-context-4.0.xsd
+      	   http://www.rabbit-open.top/schema/spouter
+       	   http://www.rabbit-open.top/schema/spouter/spouter-3.0.xsd
+       	   http://www.rabbit-open.top/schema/rabbit
+       	   http://www.rabbit-open.top/schema/rabbit/rabbit-3.0.xsd">
+	
+	<!-- 配置Spring自动扫描, Spring -->
+	&lt;context:component-scan base-package="rabbit" />
+	
+	
+	<!-- 声明一个叫"SimpleRpc"的RPC服务端 -->
+	&lt;rabbit:provider name="SimpleRpc" >
+	
+		<!-- rpc服务端zookeeper注册信息  -->
+		&lt;rabbit:registry addr="localhost:2181" />
+		
+		<!-- rpc服务自身的端口和地址信息  以及服务端连接池等信息，这里连接池信息使用默认值-->
+		&lt;rabbit:config port="10086" addr="localhost"  />
+		
+		<!-- rpc服务端扫描rpc服务的包路径，如果不指定就从根目录扫描 -->
+		&lt;rabbit:scanner packages="rabbit.open"/>
+		
+	&lt;/rabbit:provider>
+	
+	
+	<!-- 在RPC服务的基础上定义个Spouter推送服务 -->
+ 	&lt;rs:spouter name="mySpouter">
+ 		
+ 		<!-- 声明该spouter是基于"SimpleRpc"RPC服务的 -->
+ 		&lt;rs:provider name="SimpleRpc"/>
+ 		
+ 		<!-- 该spouter端总共有一个spouter服务节点 -->
+ 		&lt;rs:spouter-config shards="1" />
+ 	
+ 	&lt;/rs:spouter>	
+ 					
+&lt;/beans>							
+							</pre>
+						</section>
+						<section class="i2em">
+							Spouter节点的代码实现可以参考
+							<a href="http://www.rabbit-open.top/rabbit/spouter" style="color: blue; text-decoration: none;">Rabbit Spouter</a>
+							章节。该版本的spouter节点主要扮演路由节点的功能。然后就是开发一个Subscriber节点。首先配置xml文件：
+						</section>
+						
+						<section>
+							<pre class="brush:xml">
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.rabbit-open.top/schema/rabbit"
+	xmlns:rs="http://www.rabbit-open.top/schema/spouter"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      	   http://www.springframework.org/schema/context
+      	   http://www.springframework.org/schema/context/spring-context-4.0.xsd
+      	   http://www.rabbit-open.top/schema/spouter
+       	   http://www.rabbit-open.top/schema/spouter/spouter-3.0.xsd
+       	   http://www.rabbit-open.top/schema/rabbit
+       	   http://www.rabbit-open.top/schema/rabbit/rabbit-3.0.xsd">
+	
+	<!-- 配置Spring自动扫描, Spring -->
+	&lt;context:component-scan base-package="rabbit" />
+	
+	<!-- 声明一个叫"myConsumer"的RPC客户端 -->
+	&lt;rabbit:consumer name="myConsumer">
+	
+		<!-- 该客户端发现rpc服务端节点的策略为"RABBIT", 服务端节点的地址为"localhost:10086" -->
+		&lt;rabbit:registry addr="localhost:10086" strategy="RABBIT"/>
+		
+		<!-- 配置客户端连接池配置信息。服务端app名为"SimpleRpc"， 其它属性使用默认值 -->
+		&lt;rabbit:pool appName="SimpleRpc" />
+	
+	&lt;/rabbit:consumer>
+	
+	
+	<!-- 声明一个叫"mySubscriber"的数据订阅端 -->
+ 	&lt;rs:subscriber name="mySubscriber">
+ 		
+ 		<!-- 在客户端"myConsumer"的基础上声明一个名叫"mySubscriber"数据订阅端 -->
+ 		&lt;rs:consumer name="myConsumer"/>
+ 		
+ 		<!-- 使用subscriber的默认配置 -->
+ 		&lt;rs:subscriber-config/>
+ 	
+ 	&lt;/rs:subscriber>
+ 					
+&lt;/beans>							
+							</pre>
+						</section>
+						<section class="i2em">
+							然后是开发一个数据订阅服务。Spouter3.0的<label class="blue">@Subscriber</label>注解提供了一个"name"属性，
+							它的值对应的是<label class="blue">"rs:subscriber"</label>标签的"name"属性。
+							示例代码如下：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.open.spouter.test;
+
+import org.springframework.stereotype.Service;
+import rabbit.open.spouter.annotation.Subscriber;
+import rabbit.open.spouter.client.adapter.SubscribeAdapter;
+
+@Service
+@Subscriber(name="mySubscriber")
+public class SimpleSubscriber extends SubscribeAdapter{
+
+	/**
+	 * 接收到来自服务端的数据后触发该方法
+	 */
+	@Override
+	public void dataReceived(Object data) {
+		logger.info("data received:\t" + data);
+	}
+	
+	/**
+	 * 成功和服务端建立推送通道后触发该方法
+	 * @param	host		服务端机器ip
+	 * @param	port		服务端端口号
+	 * @param	shard		服务端的切片号
+	 */
+	@Override
+	public void connected(String host, int port, int shard) {
+		logger.info("connected success[" + host + ": " + port + "] by " + shard);
+	}
+
+	/**
+	 * 客户端订阅对象被Spring初始化后触发该方法
+	 */
+	@Override
+	protected void afterInitialized() throws Exception {
+		logger.info("SimpleSubscriber initialized");
+		//向服务端订阅数据
+		subscribe();
+	}
+
+	/***
+	 * 接收到可疑数据后触发该方法
+	 */
+	@Override
+	public void doubtfulDataReceived(Object data) {
+		logger.info("doubtful data received:\t" + data);
+		
+	}
+	
+}
+
+							</pre>
+						</section>
+						<section class="i2em">
+							然后开发一个Spout Writer。Spout Writer的申明如下：
+						</section>
+						<section>
+							<pre class="brush:xml">
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.rabbit-open.top/schema/rabbit"
+	xmlns:rs="http://www.rabbit-open.top/schema/spouter"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      	   http://www.springframework.org/schema/context
+      	   http://www.springframework.org/schema/context/spring-context-4.0.xsd
+      	   http://www.rabbit-open.top/schema/spouter
+       	   http://www.rabbit-open.top/schema/spouter/spouter-3.0.xsd
+       	   http://www.rabbit-open.top/schema/rabbit
+       	   http://www.rabbit-open.top/schema/rabbit/rabbit-3.0.xsd">
+	
+	<!-- 配置Spring自动扫描, Spring -->
+	&lt;context:component-scan base-package="rabbit" />
+	
+	<!-- 声明一个叫"myConsumer"的RPC客户端 -->
+	&lt;rabbit:consumer name="myConsumer">
+	
+		<!-- 该客户端发现rpc服务端节点的策略为"RABBIT", 服务端节点的地址为"localhost:10086" -->
+		&lt;rabbit:registry addr="localhost:10086" strategy="RABBIT"/>
+		
+		<!-- 配置客户端连接池配置信息。服务端app名为"SimpleRpc"， 其它属性使用默认值 -->
+		&lt;rabbit:pool appName="SimpleRpc" />
+	
+	&lt;/rabbit:consumer>
+	
+	
+	<!-- 声明一个叫"myWriter"的spoutwriter -->
+ 	&lt;rs:spoutwriter name="myWriter">
+ 	
+ 		<!-- spoutwriter使用默认配置 -->
+ 		&lt;rs:writer-config />
+ 		
+ 		<!--  在客户端"myConsumer"的基础上声明一个spoutwriter -->
+ 		&lt;rs:consumer name="myConsumer"/>
+ 		
+ 	&lt;/rs:spoutwriter>
+ 	
+ 					
+&lt;/beans>							
+							</pre>
+						</section>
+						
+						<section class="i2em">
+							Spout Writer的代码实现如下：
+						</section>
+						
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.open.spouter.test;
+
+import org.springframework.stereotype.Service;
+import rabbit.open.spouter.annotation.SpoutWriter;
+import rabbit.open.spouter.spc.adapter.SpoutWriterAdapter;
+
+/**
+ * 
+ * 所有的SpoutWriter 都需要继承基类SpoutWriterAdapter
+ *
+ */
+@Service
+@SpoutWriter(name = "myWriter")		//该处的名字就是xml文件中声明的name
+public class MySpoutWriter extends SpoutWriterAdapter {
+
+	@Override
+	protected void afterInitialized() throws Exception {
+		// 该方法是spout writer对象中唯一的api，向客户端号为"zhangsan"的集群推送数据"mydata"
+		dispatch("mydata", "zhangsan");
+	}
+
+	/**
+	 * 切片号为{shard}的节点上线了或者主机节点发生了变化
+	 */
+	@Override
+	protected void onSpouterRouteChanged(long shard) {
+		logger.warn("spouter[" + shard + "] 节点更新了");
+	}
+	
+	/**
+	 * subscriber上线了
+	 */
+	@Override
+	protected void onSubscriberConnected(String subscriber) {
+		logger.warn("subscriber[" + subscriber + "] 上线了");
+	}
+
+	/**
+	 * 调用dispatch方法发送数据发生网络异常触发该方法
+	 */
+	@Override
+	protected void onDeliveryException(Object data, String username, Exception e) {
+		logger.error(e.getMessage(), e);
+	}
+	
+	/**
+	 * 调用dispatch方法发送数据，发现切片号{shard}对应的spouter节点不在线时触发该方法
+	 */
+	@Override
+	protected void onSpouterNotFound(Object data, String username, long shard) {
+		logger.error("没有找到spouter[" + shard + "]");
+	}
+	
+	/**
+	 * 调用dispatch方法发送数据，发现目标节点{username}不在线时触发该方法
+	 */
+	@Override
+	protected void onSubscriberNotFound(Object data, String username) {
+		logger.error("没有找到subscriber[" + username + "]");
+	}
+
+}
+
+							</pre>
+						</section>
+						<section class="i2em">
+							推出Spout Writer以后，Spouter节点在整个Spouter体系中的角色在设计上被弱化了，他更多地扮演着数据转发的角色。所以在Spout Writer端设计了很多事件接口。
+						</section>
+						<section class="i2em">
+							事件<label class="blue">"onSubscriberNotFound"</label>：
+						</section>
+						<section class="i2em" style="padding-left: 2em;">
+							调用"dispatch"接口没有找到目标节点时触发该事件!
+						</section>
+						<section class="i2em">
+							事件<label class="blue">"onSpouterNotFound"</label>：
+						</section>
+						<section class="i2em" style="padding-left: 2em;">
+							调用"dispatch"接口没有找到路由节点(spouter)时触发该事件!
+						</section>
+						<section class="i2em">
+							事件<label class="blue">"onDeliveryException"</label>：
+						</section>
+						<section class="i2em" style="padding-left: 2em;">
+							调用"dispatch"接口发生未知异常(比如网络终端)时触发该事件!
+						</section>
+						<section class="i2em">
+							事件<label class="blue">"onSpouterRouteChanged"</label>：
+						</section>
+						<section class="i2em" style="padding-left: 2em;">
+							分发时如果触发了"onSpouterNotFound"事件，则说明对应的切片节点还没有上线或者节点发生了切换。当节点上线或者切换完毕就会触发事件"onSpouterRouteChanged"。
+							这时就可以将之前发送失败的数据再次发送。
+						</section>
+						<section class="i2em">
+							事件<label class="blue">"onSubscriberConnected"</label>：
+						</section>
+						<section class="i2em" style="padding-left: 2em;">
+							分发时如果触发了"onSubscriberNotFound"事件，则说明对应的目标节点不在线。这时Spout Writer内部就会启动对该目标节点的上线监听机制，当该节点上线以后就会触发"onSubscriberConnected"事件。
+							这时就可以将之前发送失败的数据再次发送。
+						</section>
+					
+					</div>	
+						
+					<div class="mode capter">
+						<p>工作原理</p>
+						<section class="i2em">
+						Rabbit Spouter实现了数据的分片式推送，但是该模式有一个痛点就是固定切片号的spouter节点只能推送数据给固定的集群客户端。
+						而往往web服务器收到的数据和spouter节点是无法匹配的。Spout Writer就是为了解决这个问题而产生的。Spout Writer的工作原理图如下：
+						</section>
+					</div>		
+					<div>
+						<embed src="./img/spout-writer.svg" type="image/svg+xml"/>
+						<section class="i2em">
+						每个Spout Writer节点都会和所有的spouter节点(备用节点除外)之间维护一个连接池，最大连接数默认5，该值可配置。当服务端Spouter的切片数发生变化，
+						或者切片节点发生变化时Spout Writer会自动感知，并即时更新路由信息和连接信息。
+						</section>
+						<section class="i2em" style="margin-bottom: 20px;">
+						Spout Writer节点和spouter之间之间的通信采用的是同步阻塞模式，Spout Writer节点会根据数据的目标信息自动选择正确的路由信息。
+						如果发送数据时刚好遇到路由变更则会触发路由错误事件。
+						</section>
+					</div>		
+					
+					<div class="tag capter">
+						<p>开发须知</p>
+						<section class="i2em">
+							1、Rabbit RPC 3.0对整个rabbit体系中的所有标签都进行了重新设计，目的是为了让配置更简洁明了。该版本标签和属性描述都在schema中进行了详细的描述。
+							开发者可以通过eclipse的代码助手看到所有的属性和标签的描述信息。
+						</section>
+						<img alt="" style="width: 835px; height:302px; margin: 10px 0px;" src="./img/assist.png">
+						<section class="i2em">
+							2、示例代码中的配置都是使用的最简配置。开发者可以根据自己的实际情况自行调节配置。比如"spouter-config"标签就有如下默认属性。
+						</section>
+						<img alt="" style="width: 835px; height:306px; margin: 10px 0px;" src="./img/cfg.png">
+					</div>		
+				</div>
+			</div> 
+			<script type="text/javascript">
+				$(function(){
+					window.hidetimer = null;
+					$("li.center a.center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+						$(this).closest("li.center").find(".project-center").fadeIn(500);
+					}, function(){
+						var pro = $(this).closest("li.center").find(".project-center");
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 100);
+					});
+					$(".project-center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+					},function(){
+						var pro = $(this);
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 500);
+					})
+				})
+				
+			</script>			
+			<div class="footer">
+				<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 9999; position:relative; overflow:hidden;">
+					<div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+				</div> -->
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+	
+</html>

@@ -1,0 +1,199 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter">
+		<meta content="rpc orm spouter">
+		<title>我爱编程</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.content div{
+				font-family: 微软雅黑;
+			}
+			.project{
+				width: 480px;
+			}
+			.content .pheader{
+				color: blue;
+				font-weight: bold;
+				font-size: 14px;
+				border-bottom: 1px solid #DADADA;
+				padding: 20px 20px 5px 5px;
+			}
+			.row{
+				font-family: 微软雅黑;
+				font-size: 14px;
+				-moz-column-count: 2; 	 
+				-webkit-column-count: 2; 
+				column-count: 2;
+			}
+			.cell{
+				padding: 15px 5px 5px 5px;
+			}
+			.remark{
+				clear: both;
+				font-family: 微软雅黑;
+				font-size: 14px;
+				text-indent: 2em;
+				padding-top: 50px;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA; overflow-y: scroll;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Resource Center for U</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		
+		<div class="content">
+			<div class="project left">
+				<div class="pheader">Rabbit ORM</div>
+				<div class=row>
+					<div class="cell">resource name</div>
+					<div class="cell">jdk version</div>
+				</div>
+				<div class=row>
+					<div class="cell"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">orm-latest.jar</a></div>
+					<div class="cell">1.8</div>
+				</div>
+				<div class=row>
+					<div class="cell"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">orm-latest-sources.jar</a></div>
+					<div class="cell">---</div>
+				</div>
+				<div class=row>
+					<div class="cell"><a href="./download/orm-sample.rar">orm-sample.rar</a></div>
+					<div class="cell">---</div>
+				</div>
+			</div>
+			<div class="project right" >
+				<div class="pheader">Rabbit RPC</div>
+				<div class=row>
+					<div class="cell">resource name</div>
+					<div class="cell">jdk version</div>
+				</div>
+				<div class=row>
+					<div class="cell"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/rpc">rabbit rpc</a></div>
+					<div class="cell">1.8</div>
+				</div>
+				<div class=row>
+					<div class="cell"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/spouter">rabbit spouter</a></div>
+					<div class="cell">---</div>
+				</div>
+				<div class=row>
+					<div class="cell"><a href="./download/rpc-sample.rar">rpc-sample.rar</a></div>
+					<div class="cell">---</div>
+				</div>
+				<div class=row>
+					<div class="cell"><a href="./download/spouter-sample.rar">spouter-sample.rar</a></div>
+					<div class="cell">---</div>
+				</div>
+			</div>
+			
+			<div class="remark" >
+				我们提供的jar包都是在JDK8环境下编译的。如果需要兼容其它JDK版本的jar包可以使用我们提供的源码自己编译。
+				我们提供的示例工程都是maven的工程，项目中和Rabbit相关的依赖都发布在Rabbit的
+				<a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/" style="text-decoration: none; color: blue;">
+				maven中央库
+				</a>了。所有的release-note信息已伴随源文件一起发布在jar包中。<br/>
+			</div>
+			<div style="text-indent: 2em; margin-top: 10px; font-size: 14px; color: blue;">
+				您的使用就是我们前进的动力，谢谢！
+			</div>
+		</div>			
+		<div class="footer">
+			<br/>
+			<br/>
+			<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 9999; position:relative; overflow:hidden;">
+					<div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+			</div> -->
+			<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+				<ul class="footer">
+					<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+					<li>abbit team 709498191@qq.com </li>
+				</ul>
+			</div>
+			<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+				<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+				蜀ICP备17028451号-1
+				</a>
+			</div>
+		</div>
+					
+		<script type="text/javascript">
+			$(function(){
+				window.hidetimer = null;
+				$("li.center a.center").hover(function(){
+					if(null != window.hidetimer){
+						clearTimeout(window.hidetimer);
+					}
+					$(this).closest("li.center").find(".project-center").fadeIn(500);
+				}, function(){
+					var pro = $(this).closest("li.center").find(".project-center");
+					window.hidetimer = setTimeout(function(){
+						pro.fadeOut(500);
+					}, 100);
+				});
+				$(".project-center").hover(function(){
+					if(null != window.hidetimer){
+						clearTimeout(window.hidetimer);
+					}
+				},function(){
+					var pro = $(this);
+					window.hidetimer = setTimeout(function(){
+						pro.fadeOut(500);
+					}, 500);
+				})
+			})
+			
+		</script>			
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->	
+	</body>
+	
+</html>

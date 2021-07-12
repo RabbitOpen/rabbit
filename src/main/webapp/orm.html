@@ -1,0 +1,1047 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>我爱编程</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushBash.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("resume" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+				$(".xml a").css({
+					"text-decoration": "none"
+				})
+			})		
+		</script>
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.blue{
+				color: blue;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Write less do more</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="./ormapi">API文档</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		
+		<div class="content">
+			<div>
+				<div class="left nav">
+					<ul>
+						<li id="resume">项目简介</li>
+						<li id="env">新手上路</li>
+						<li id="obq">对象查询</li>
+						<li id="dynamicFilter">动态过滤</li>
+						<li id="lazy">关联查询</li>
+						<li id="joinFetch">多端加载</li>
+						<li id="page">分页排序</li>
+						<li id="mutiSource">多数据源</li>
+						<li id="transaction">事务控制</li>
+						<li id="mustknow">开发须知</li>
+					</ul>
+				</div>
+				<div class="right containers">
+					<div class="resume capter">
+						<div style="position: relative;">
+							<div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+								项目简介
+							</div>
+						</div>
+						<div style="text-indent: 2em; line-height: 24px;">
+							write less do more 是我们不懈的追求。rabbit致力于提供一个零sql的应用解决方案。
+							rabbit本质上是一项动态sql技术。它能够根据用户的需求动态地生成sql语句, 加载用户想要加载的数据。 
+							rabbit提供了API级的关联加载(动态懒加载)方案。 它与常见的懒加载技术不同, 它没有N+1的负面效应。
+						</div>
+					</div>
+					<div class="env capter">
+						<p>新手上路</p>
+						<div style="text-indent: 2em; line-height: 24px;">
+							Rabbit本身是一项独立的技术框架。
+							但是鉴于spring在java应用中的地位, 我们在rabbit内部提供了它与spring的整合方案。这里我们也只介绍这种方案。
+							首先引入spring和rabbit相关的jar包，然后再配置数据源，最后就是写测试代码。
+						</div>
+						<div>
+							<div style="text-indent: 2em; line-height: 24px;">
+								如果还没有引入rabbit的maven库资源，那么的先在你的maven配置文件中加入rabbit的资源库信息。
+							</div>
+							<pre class="brush:xml">
+								&nbsp;
+&ltrepository>
+	&ltid>rabbit-open&lt/id>
+	&lturl>http://www.rabbit-open.top/nexus/content/groups/public/&lt/url>
+	&ltreleases>
+		&ltenabled>true&lt/enabled>
+	&lt/releases>
+	&ltsnapshots>
+		&ltenabled>false&lt/enabled>
+	&lt/snapshots>
+&lt/repository>
+							</pre>
+							<div style="text-indent: 2em; line-height: 24px;">
+							然后就可以在项目的pom.xml文件中添加如下依赖信息。也可以直接去rabbit的maven中央库中<a style="text-decoration: none; color: blue;" href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm/">
+								下载</a>。
+							</div>	
+							<pre class="brush:xml">
+							&nbsp;
+&ltdependency>
+	&ltgroupId>rabbit.open&lt/groupId>
+	&ltartifactId>orm&lt/artifactId>
+	&ltversion>1.7.2&lt/version>
+&lt/dependency>
+							</pre>
+						</div>
+						<div>
+							<div style="text-indent: 2em; line-height: 24px;">
+								数据源配置如下：
+							</div>	
+							<pre class="brush:xml">
+&nbsp;
+<!-- 
+	rabbit的数据源内置了心跳检测机制以防止连接空闲太久超时。 心跳频率为30秒
+	
+	rabbit还内置了连接健康检测机制，能够感知网络闪断、 数据库重启等状况, 并及时重建连接
+-->
+
+<bean id="dataSource" class="rabbit.open.orm.pool.DataSource" init-method="init" 
+				destroy-method="shutdown">
+	<property name="driverClass">
+		<value>${jdbc.driverName}</value>
+	</property>
+	<property name="url">
+		<value>${jdbc.url}</value>
+	</property>
+	<property name="username">
+		<value>${jdbc.username}</value>
+	</property>
+	<property name="password">
+		<value>${jdbc.password}</value>
+	</property>
+	<!-- 最大连接数 -->
+	<property name="maxSize">
+		<value>${jdbc.maxSize}</value>
+	</property>
+	<!-- 最小连接数 -->
+	<property name="minSize">
+		<value>${jdbc.minSize}</value>
+	</property>
+	<!-- 最大空闲时间, 单位是分钟, 建议设置个几分钟就可以了 -->
+	<property name="maxIdle">
+		<value>${jdbc.maxIdle}</value>
+	</property>
+	
+	<!-- 	以下的配置项都是可选的、有默认值的 	-->
+	
+	<!-- 是否显示sql true/false 默认false -->
+	<property name="showSql">
+		<value>${jdbc.showSql}</value>
+	</property>
+	<!-- 是否格式化显示sql true/false  默认false -->
+	<property name="formatSql">
+		<value>${jdbc.formatSql}</value>
+	</property>
+	<!-- ddl操作, 默认是none，create代表新建表；update代表更新表 -->
+	<property name="ddl">
+		<value>${jdbc.ddl}</value>
+	</property>
+	<!-- ddl扫描的包路径, 默认从根目录("")扫描 -->
+	<property name="packages2Scan">
+		<value>${jdbc.packages2Scan}</value>
+	</property>
+	
+	<!-- 每个session允许缓存的jdbc存储过程最大个数，默认是1000个。超过上限则会优先淘汰最不常用的 -->
+	<property name="maxCachedStmt">
+		<value>${jdbc.maxCachedStmt}</value>
+	</property>
+</bean>
+							</pre>
+						</div>
+					</div>
+					
+					<div class="obq capter">
+						<p>对象查询</p>
+						<div style="text-indent: 2em; line-height: 24px;">
+							rabbit支持直接使用实体对象作为查询条件进行查询。假设有用户表(T_USER)和团队表(T_TEAM)两张表, 结构如下:
+							<br/>
+							<embed src="./img/orm-1.svg" type="image/svg+xml"/>
+						</div>
+						<div>
+							<span>用户表实体代码如下:</span>
+							<pre class="brush:java">
+import rabbit.open.orm.annotation.Column;
+import rabbit.open.orm.annotation.Entity;
+import rabbit.open.orm.annotation.PrimaryKey;
+import rabbit.open.orm.dml.policy.IDPolicy;
+
+@Entity("T_USER")
+public class User {
+	
+	//标记主键字段, 每张实体表都必须要有一个主键字段
+	@PrimaryKey()
+	@Column("ID")
+	private Integer id;
+	
+	//表示该字段和数据库中的NAME字段进行映射
+	@Column("NAME")
+	private String name;
+
+	@Column("GENDER")
+	private String gender;
+	
+	//manyToOne不需要额外声明, rabbit会根据实体类型自动识别
+	@Column(value="TEAM_ID")
+	private Team team;
+	
+	//.....此处省略get set 方法
+}
+							</pre>
+						</div>
+						<div>
+							<span>团队表实体代码如下:</span>
+							<pre class="brush:java">
+//.....此处省略import
+@Entity("T_TEAM")
+public class Team {
+
+	//主键策略, 如果是UUID和自增长或者序列, 在insert时就会自动设值, 
+	@PrimaryKey(policy=IDPolicy.AUTOINCREMENT)
+	@Column("ID")
+	private Integer id;
+	
+	@Column("NAME")
+	private String name;
+
+	//.....此处省略get set 方法
+}
+							</pre>
+						</div>
+						<div>
+							<span>User对象的服务类代码如下:</span>
+							<pre class="brush:java">
+
+////.....此处省略其它import
+import org.springframework.stereotype.Service;
+import rabbit.open.orm.spring.SpringDaoAdapter;
+
+/**
+ * 所有直接操作表的服务类都需要继承SpringDaoAdapter
+ * 并且需要在泛型参数中指明这个服务类要操作的实体类
+ **/
+@Service("UserService")
+public class UserService extends SpringDaoAdapter&ltUser&gt{
+
+}
+							</pre>
+						</div>
+						<div>
+							<span>接下来就可以写我们单元测试代码了</span>
+							<pre class="brush:java">
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath*:/applicationContext.xml"})
+public class RabbitSample{
+
+	@Autowired
+	UserService us;
+	
+	/**
+	 * 该示例演示在查询过程中如何添加查询条件。
+	 * filter对象中的所有被映射成表字段的非空字段都会被当作查询条件
+	 */
+	@Test
+	public void queryTest(){
+		try {
+			User filter = new User();	//新建过滤对象
+			filter.setName("张三");
+			Team team = new Team();
+			team.setName("my-team");
+			filter.setTeam(team);
+			//查询name为张三且所在团队叫'my-team'的所有User
+			List&ltUser&gt users = us.getSupport().createQuery(filter).execute().list();
+			System.out.println(users.size());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+}
+							</pre>
+						</div>
+					</div>
+					<div class="dynamicFilter capter">
+						<p>动态过滤</p>
+						<div style="text-indent: 2em;">
+							刚才的示例只是演示一个简单的查询场景。就是所有过滤条件都是"="的场景。
+							但是实际应用中会有很多复杂的应用场景。下面我们就来逐一举例。
+						</div>
+						<div>
+							<pre class="brush:java">
+
+/**
+ * 动态添加多表关联查询条件
+ */
+@Test
+public void queryDemo1(){
+	try {
+		User filter = new User();	//新建过滤对象
+		filter.setName("张三");
+		//如果createQuery传null或者什么都不传,则代表只创建一个不带限制条件的查询对象
+		us.getSupport().createQuery(filter)			//创建一个带name过滤条件的查询对象
+			.addFilter("id", 1, FilterType.GTE)		//新增一个过滤条件  id >= 1
+			.addFilter("id", 10, FilterType.LTE)	//新增一个过滤条件  id <= 10
+			.addFilter("id", 2, Team.class)			//新增一个关联表 team的 id=2的过滤条件
+			.execute().list();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+
+/**
+ * 动态添加 in 查询条件
+ */
+@Test
+public void queryDemo2(){
+	try {
+		//新增的过滤条件如果是IN, 值就必须是数组或者集合类型
+		us.getSupport().createQuery()
+			.addFilter("id", new Integer[]{1, 2}, FilterType.IN)			
+			.execute().list();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+
+/**
+ * 动态添加带运算的查询条件
+ */
+@Test
+public void queryDemo3(){
+	try {
+		us.getSupport().createQuery()
+			//新增一个过滤条件 id取模等于0
+			.addFilter("${id}%2", 0)			
+			.execute().list();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+							</pre>
+						</div>
+					</div>
+					<div class="lazy capter">
+						<p>关联查询</p>
+						<div style="text-indent: 2em; line-height: 24px;">
+							上面的例子都是对主表User的操作。并未涉及到关联表数据的加载。
+							如果我们还需要在查询User的同时取出关联表team中的数据, 那么只需要在执行"execute"之前执行一个"fetch"操作即可。
+						</div>
+						<div style="text-indent: 2em; color:blue; line-height: 24px;">
+							但是需要特别说明一点, 不管是addFilter还是fetch操作都只是告诉query对象我想要做什么事。
+							query对象会在execute的时候用一条SQL语句完成所有请求。
+						</div>
+						<div>
+							<pre class="brush:java">
+/**
+ * fetch anytime anywhere
+ */
+@Test
+public void queryDemo2(){
+	try {
+		//新增的过滤条件如果是IN, 值就必须是数组或者集合类型
+		us.getSupport().createQuery()
+			.addFilter("id", new Integer[]{1, 2}, FilterType.IN)
+			.fetch(Team.class)			//关联查出当前User所关联的team对象
+			.execute().list();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+							</pre>
+						</div>
+						<div style="text-indent: 2em; line-height: 24px;">
+							在实际项目中, 实体之间的关联往往不会像我们理想的那样干脆、简洁。由于各种原因我们的关联关系会千奇百怪。
+							上面取关联表的方式只是最简单的一种。下面我们就以下面的表关系为例来进一步讨论关于fetch的那些事！
+						</div>
+						<embed src="./img/orm-2.svg" type="image/svg+xml"/>
+						<div style="text-indent: 2em; line-height: 24px;">
+							实体类代码如下:
+						</div>
+						<div>
+							<pre class="brush:java">
+//映射表't_user'的实体							
+@Entity("t_user")
+public class User {
+ 
+    @PrimaryKey()
+    @Column("ID")
+    private Integer id;
+     
+    @Column("NAME")
+    private String name;
+ 
+    @Column("GENDER")
+    private String gender;
+     
+    @Column(value="TEAM_ID")
+    private Team team;
+    
+    //映射t_org的外键字段
+    @Column(value="ORG_ID")
+    private Organization org;
+	
+	//....省略  get、set方法
+} 
+
+//映射表't_team'的实体
+@Entity("t_team")
+public class Team {
+ 
+    @PrimaryKey()
+    @Column("ID")
+    private Integer id;
+     
+    @Column("NAME")
+    private String name;
+    
+    @Column("RESOURCE_ID")
+	private Resources resource;
+	
+	//....省略  get、set方法
+}
+
+//映射表't_org'的实体
+@Entity("t_org")
+public class Organization {
+
+    @PrimaryKey()
+    @Column("ID")
+	private Integer id;
+	
+	@Column("ORG_CODE")
+	private String orgCode;
+
+	@Column("ORG_NAME")
+	private String orgName;
+	
+	@Column("RESOURCE_ID")
+	private Resources resource;
+	
+	//....省略  get、set方法
+
+}
+
+//映射表't_resource'的实体
+@Entity("t_resource")
+public class Resources {
+
+	@PrimaryKey()
+    @Column("ID")
+	private Integer id;
+	
+	@Column("RESOURCE")
+	private String resource;
+	
+	//....省略  get、set方法
+	
+}
+							</pre>
+						</div>
+						<div style="text-indent: 2em;">
+							接下来我们来看下示例代码
+						</div>
+						<div>
+							<pre class="brush:java">
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath*:/applicationContext.xml"})
+public class RabbitSample{
+
+	@Autowired
+	UserService us;
+	
+	@Test
+	public void demo(){
+		try {
+			us.getSupport().createQuery()
+				//关联取出Team和Organization对象
+				.fetch(Team.class).fetch(Organization.class)
+				
+				//注意！！！这样写是无法取出Resources对象的
+				.fetch(Resources.class)
+				.execute().list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+}
+							</pre>
+						</div>
+						<div style="text-indent: 2em; color: blue; line-height: 24px;">
+							上面的示例代码是无法取出Resources对象的! 函数"fetch"是一个不定参数的函数。
+							它的第一个参数代表你想要关联获取的对象。
+							后面参数代表第一个参数后主体类(User)之间的依赖路径。所以要想取出Resources就需要传递正确的依赖路径。
+						</div>
+						<div style="text-indent: 2em; color: fuchsia; line-height: 24px;">
+							依赖路径就是指关联实体类和主体类之间的包含层级关系。上面的示例代码中主体类就是User。类 Team、Organization、 Resources都是"User"的关联实体。
+						</div>
+						<div style="text-indent: 2em; line-height: 24px;">
+							实体类"Team"和"Organization"的依赖路径就只有一个！分别是Team.class --> User.class 和 
+							Organization.class --> User.class。
+							
+							而Resources的依赖路径有两个。
+						</div>
+						<div style="text-indent: 2em; color: blue;">
+							<pre class="brush:java">
+							
+//下面两种写法是等同的
+														
+fetch(Organization.class)
+
+fetch(Organization.class, User.class)
+
+//如果我们想关联取出Resources对象我们需要这样写
+fetch(Resources.class, Organization.class, User.class)
+//或者
+fetch(Resources.class, Organization.class)
+
+//因为Organization和User的之间依赖路径是唯一的, 所以Organization后面的依赖就可以不写了。
+
+//！！！rabbit不支持同一个类同时存在两条不同依赖路径的fetch操作, 后面的操作会覆盖前面的操作
+fetch(Resources.class, Organization.class).fetch(Resources.class, Team.class)
+							</pre>
+						</div>
+					</div>
+					<div class="joinFetch capter">
+						<p>多对多、一对多加载</p>
+						<div style="text-indent: 2em; line-height: 24px;">
+							在rabbit的世界里多对一是不需要特别声明的，他们可以像普通字段一样使用@Column注解进行映射。但是多对多和一对多就需要特别声明了。
+							我们还是通过表结构和示例代码来说明，假设有表关系如下：
+						</div>
+						<embed src="./img/orm-3.svg" type="image/svg+xml"/>
+						<div style="text-indent: 2em; line-height: 24px;">
+							实体类代码结构如下:
+						</div>
+						<div>
+							<pre class="brush:java">
+							
+//用户类
+@Entity("USER")
+public class User {
+ 
+    @PrimaryKey()
+    @Column("ID")
+    private Integer id;
+     
+    @Column("USERNAME")
+    private String name;
+ 
+    @ManyToMany(joinTable="user_role", 		//USER和ROLE 多对多的中间表
+    		joinColumn="USER_ID", 			//User在中间表中的外键字段名
+    		reverseJoinColumn="ROLE_ID", 	//ROLE在中间表中的外键字段名
+    		
+    		//中间表的主键字段名, 如果中间表没有ID就不用配该项, 配置了ID就必须指定策略
+    		id="ID", 		
+    		
+    		//中间表ID的生成策略, 自增长可以不配置id, UUID和SEQUENCE必须指定id
+    		policy=IDPolicy.AUTOINCREMENT)	
+    List&ltRole&gt roles;
+ 
+    //.....此处省略get set 方法
+}
+
+//角色类
+@Entity("ROLE")
+public class Role {
+
+	@PrimaryKey()
+    @Column("ID")
+    private Integer id;
+     
+    @Column("ROLE_NAME")
+    private String rolename;
+    
+    //隐式的ManyToOne, rabbit当中没有提供专门的"ManyToOne"注解
+    @Column("RESOURCES_ID")
+    private Resources res;
+    
+    //.....此处省略get set 方法
+    
+    public Role(Integer id) {
+		this.id = id;
+	}
+
+	public Role() {
+		super();
+	}
+	
+}
+
+//资源类
+@Entity("T_RESOURCE")
+public class Resources {
+
+	@PrimaryKey
+    @Column("ID")
+	private Integer id;
+	
+	@Column("RESOURCE")
+	private String resource;
+
+ 	//.....此处省略get set 方法
+}
+							</pre>
+						</div>
+						<div>
+							<section style="text-indent: 2em; line-height: 24px;">
+								从实体类代码可以看出。rabbit可以不用专门为中间表建立实体对象。
+								因为rabbit提供了大量的API让你可以轻松操作中间表。当然你也可以自己操作中间表, 如果的确有需要的话。
+							</section>
+							<section style="text-indent: 2em; line-height: 24px;">
+								接下来我们来通过示例代码来演示如何进行多对多和一对多的操作。
+							</section>
+						</div>
+						<div>
+							<pre class="brush:java">
+@Autowired
+UserService us;
+
+/**
+ * 多对多演示1
+ */
+@Test
+public void fetchDemo1(){
+	try {
+		us.getSupport().createQuery()
+			.joinFetch(Role.class)		//ManyToMany和OneToMany的数据只需一个API就能取出
+			.execute().list();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+
+/**
+ * 多对多演示2
+ */
+@Test
+public void fetchDemo2(){
+	try {
+		us.getSupport().createQuery()
+			//也可以通过动态添加多端过滤条件的方式来取出多对多、一对多的数据
+			//只取出Role id 大于等于10的数据
+			.addJoinFilter("id", 10, FilterType.GTE, Role.class)		
+			.execute().list();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+
+/**
+ * 
+ * 中间表操作示例
+ * 
+ */
+@Test
+public void joinFetch3(){
+	try {
+		//构建用户和角色对象
+		User u = new User();
+		u.setId(1);
+		List&ltRole&gt roles = new ArrayList&ltRole&gt();
+		roles.add(new Role(1));
+		roles.add(new Role(2));
+		u.setRoles(roles);
+		
+		//向中间表user_role插入用户1和角色1、角色2的关系数据(单纯的insert)
+		us.addJoinRecords(u);
+		
+		//从中间表user_role删除用户1的所有角色数据
+		us.clearJoinRecords(u, Role.class);
+		
+		//从中间表user_role删除用户1和角色1、角色2的关系数据
+		us.removeJoinRecords(u);
+		
+		//等同先removeJoinRecords再addJoinRecords
+		us.replaceJoinRecords(u);
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+							</pre>
+						</div>
+					</div>
+					<div class="page capter">
+						<p>分页排序</p>
+						<div style="text-indent: 2em; line-height: 24px;">
+							rabbit中的分页比较简单, 直接调用page函数即可。排序也是一样, 排序提供了升序和降序两个方法。
+						</div>
+						<div>
+							<pre class="brush:java">
+							
+/**
+ * 分页排序演示
+ */
+@Test
+public void pageOrderDemo(){
+	try {
+		us.getSupport().createQuery()
+			//取第0页 , 每页10条数据
+			.page(0, 10)	
+			//根据id升序,asc("id")等同asc("id", User.class)。第二个参数代表字段所属的表
+			//如果是多表关联查询, 第二个字段就可以是关联表
+			.asc("id")
+			//根据name降序
+			.desc("name", User.class)
+			.execute().list();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+							</pre>
+						</div>
+					</div>
+					<div class="mutiSource capter">
+						<p>多数据源</p>
+						<div style="text-indent: 2em; line-height: 24px;">
+							从1.6.5的版本开始，Rabbit支持在一个应用中配置多个数据源，用不同的id区分即可。需要特别说明的是
+							<label class="blue">id为"dataSource"的数据源是默认数据源，</label>
+							我们定义service类时不需要做特殊说明即可使用。
+						</div>
+						<div>
+							<pre class="brush:xml">
+&nbsp;
+
+		<!-- 默认数据源 -->
+		
+&ltbean id="dataSource" class="rabbit.open.orm.pool.DataSource" init-method="init" 
+				destroy-method="shutdown">
+				
+		<!-- 此处省略其它配置项 -->
+		
+&lt/bean>
+
+	<!-- 定义第二个数据源 -->
+&ltbean id="oracleDataSource" class="rabbit.open.orm.pool.DataSource" init-method="init" 
+				destroy-method="shutdown">
+				
+		<!-- 此处省略其它配置项 -->
+		
+&lt/bean>
+							</pre>
+						</div>
+						<div>
+							<section style="text-indent: 2em; line-height: 24px;">
+								如果我们需要使用数据源"oracleDataSource"则需要在service类中显示地指定我们要用的数据源。
+								指定数据源的方法就是通过重载基类方法
+								"getSourceName"，如下：
+							</section>
+							<pre class="brush:java">
+								
+package rabbit.doc.test;
+
+import org.springframework.stereotype.Service;
+import rabbit.open.orm.spring.SpringDaoAdapter;
+
+@Service("UserService")
+public class UserService extends SpringDaoAdapter&ltUser>{
+
+	//重载该方法，指定该类中所有方法使用的数据源是"oracleDataSource"
+	@Override
+	protected String getSourceName() {
+		return "oracleDataSource";
+	}
+	
+}
+							</pre>
+						</div>
+					</div>
+					<div class="transaction capter">
+						<p>事务控制</p>
+						<div style="text-indent: 2em; line-height: 24px;">
+							rabbit对事务的控制做的相对简单。只需要在要想进行事务控制的方法上加上注解@Transaction即可。
+							但是该方法所属的类必须继承自TransactionSupport或者TransactionSupport的子类。
+							只要标记@Transaction的方法抛出异常,当前方法所代表的操作就会回滚。
+							如果事务方法之间有嵌套调用，内部事务将会被忽略。 
+						</div>
+						<div>
+							<pre class="brush:java">
+							
+import org.springframework.stereotype.Service;
+import rabbit.open.orm.annotation.Transaction;
+import rabbit.open.orm.spring.SpringDaoAdapter;
+
+//SpringDaoAdapterltUser本身就是TransactionSupport的子类
+@Service("UserService")
+public class UserService extends SpringDaoAdapterltUser&gt{
+
+	/**
+	* 通过注解"@Transaction"表示该方法是需要进行事务控制的方法
+	* 可以多个数据源的方法串行执行
+	*/
+	@Transaction
+	public void transactionMethod(){
+		
+		//---数据源1的逻辑-----
+		//....................
+
+		//---数据源2的逻辑-----
+		//....................
+	}
+	
+}
+ 
+							</pre>
+						</div>
+						<div style="text-indent: 2em; line-height: 24px;">
+							上面的示例代码说明了<label style="color: gray">@Transaction</label>注解能支持分布式事务。
+							但是Rabbit对多数据源分布式事务的支持是有限制条件的，我们先看下Rabbit分布式事务的处理流程：
+							<embed src="./img/transaction.svg" type="image/svg+xml"/>
+						</div>
+						<div style="text-indent: 2em; line-height: 24px;">
+							图中1、2步属于串行执行事务阶段。如果这个阶段应用崩溃或者数据库down掉rabbit都能正常回滚。
+							第3步是串行提交过程，如果这个阶段应用崩溃或者数据库down掉，那么已经提交的数据将无法回滚。
+							<label class="blue">所以Rabbit的分布事务是建立在健壮的应用和稳定的数据库服务基础上的。是有条件的分布式事务。</label>
+						</div>
+					</div>
+
+					<div class="mustknow capter">
+						<p>开发须知</p>
+						<div style="text-indent: 2em;">
+							<section style="text-indent: 2em; font-weight: bold; margin-bottom: 10px;">
+							1、关于rabbit生成sql语句的规则。	
+							</section>
+							<section style="text-indent: 4em; line-height: 24px;">
+							<span style="font-weight: bold;">1</span>、多对一、一对多、多对多的关联数据查询都是采用左连接(left join)查询
+							</section>
+							<section style="text-indent: 4em; line-height: 24px;">
+							<span style="font-weight: bold;">2</span>、多对一的关联表的字段被作为筛选条件进行过滤时该表将会和主表进行内链接。
+							</section>
+							<section style="text-indent: 4em; line-height: 24px;">
+							<span style="font-weight: bold;">3</span>、内链接优先级高于左连接。也就是说多对一的关联表被作为过滤条件时,即使调用了fetch函数，也是执行的内链接查询。
+							</section>
+							<section style="text-indent: 4em; line-height: 24px;">
+								以"fetchDemo1"的示例代码为例，生成的sql如下。
+							</section>
+							<section style="margin-left: 4em; line-height: 24px;">
+								<pre class="brush:sql">
+-- rabbit提供了API允许开发者在生成sql时给表设置别名。 如果没有设置, 为了压缩sql长度, rabbit会自动设置。默认从A-Z命别名。
+-- 如果还不够就继续从A1-Z1命别名, 以此类推
+
+select
+        A.ID 			as A$0,
+        A.USERNAME 		as A$1,
+        B.ID 			as J$B$0,
+        B.ROLE_NAME 	as J$B$1,
+        B.RESOURCES_ID 	as J$B$2  
+    from
+        USER A 
+    left join
+        user_role C 
+            on A.ID = C.USER_ID 
+    left join
+        ROLE B 
+            on C.ROLE_ID = B.ID
+								
+								</pre>
+							</section>
+							<section style="text-indent: 2em; font-weight: bold; margin-bottom: 10px;">
+								2、关于分页排序的那些事。	
+							</section>
+							<div style="padding-left: 4em; text-indent:0; line-height: 24px; margin-bottom: 5px;">
+								<span style="font-weight: bold;">1</span>、rabbit推荐Query对象完成查询操作。但是也提供了SQLQuery对象, 支持自己写sql。切记不要在SQLQuery的sql中自己分页和排序。如果需要分页、排序请调用API。
+							</div>
+							<div style="padding-left: 4em; text-indent:0; line-height: 24px;">
+								<span style="font-weight: bold;">2</span>、如果调用了<span style="color: blue;">"joinFetch"</span>函数, 
+								那么请慎重使用<span style="color: blue;">"page"</span>函数！ 文章一开始就指出了rabbit是一项动态sql技术。所有用户请求都是在一次查询中完成。
+								用户在使用<span style="color: blue;">"joinFetch"</span>时本质上是主表和子表进行了一次<span style="color: blue;">left join</span>。
+								查询结果是一个笛卡尔集。我们得到的数据是rabbit进行合并以后的结果。如果我们在<span style="color: blue;">"joinFetch"</span>的时候<span style="color: blue;">"page"</span>那么被我们分页将会是
+								整个笛卡尔积, 而不是对主表进行了分页。
+								<section style="text-indent: 2em;">
+									并不是说<span style="color: blue;">"joinFetch"</span>和<span style="color: blue;">"page"</span>就一定不能一起用。比如主表是角色表，多对多用户表。
+									当我们指定一个角色对用户进行分页时就是查询的拥有该角色的用户信息。
+								</section>
+							</div>
+							<section style="text-indent: 2em; font-weight: bold; margin: 10px 0px;">
+								3、关于实体对象属性的那些事。	
+							</section>
+							<div style="padding-left: 4em; text-indent:0; line-height: 24px; margin-bottom: 5px;">
+								<span style="font-weight: bold;">1</span>、rabbit支持将对象做为查询条件，过滤的条件就是非空字段。所以字段数据类型<span style="color: blue;">强烈建议</span>不要直接使用基础数据类型(<span style="color: blue;">int、float、double、long、byte、short、char、boolean</span>)，
+								因为他们都有默认值。要使用他们的包装类型<span style="color: blue;">Integer、Float、Double、Long、Byte、Short、Character、Boolean</span>。
+							</div>
+							<div style="padding-left: 4em; text-indent:0; line-height: 24px; margin-bottom: 5px;">
+								<span style="font-weight: bold;">2</span>、和Hibernate一样，所有实体对象必须有一个不带任何参数的构造函数。
+							</div>
+							<section style="text-indent: 2em; font-weight: bold; margin: 10px 0px;">
+								4、关于中间表操作的那些事。	
+							</section>
+							<div style="padding-left: 4em; text-indent: 2em; line-height: 24px; margin-bottom: 5px;">
+								rabbit提供了中间表操作的的api。 这些api在执行数据库操作时都是一次性提交，不管操作多少条数据都是一次性batch执行! 为了方便查看，我们在打印日志时是分开打印的。
+							</div>
+							<section style="text-indent: 2em; font-weight: bold; margin: 10px 0px;">
+								5、关于ddl使用的那些事。	
+							</section>
+							<div style="padding-left: 4em; text-indent: 2em; line-height: 24px; margin-bottom: 5px;">
+								rabbit在配置数据源的时候可以通过配置ddl配置项完成"create"或者"update"数据库表的工作，使你快速地进行DB开发工作。"create"操作会先删除所有外键、再删除现有的表、最后新建表。
+								"update"操作则是新增不存在的表、更新已存在的表的字段信息, 但是不包括中间表。目前的版本两个操作都不会新建外键关系。
+							</div>
+							<section style="text-indent: 2em; font-weight: bold; margin: 10px 0px;">
+								6、关于循环引用的那些事。	
+							</section>
+							<div style="padding-left: 4em; text-indent: 2em; line-height: 24px; margin-bottom: 5px;">
+								所有全自动的orm框架都是通过实体之间的引用关系来表示外键依赖关系的。这就不可避免出现循环引用的现象。比如实体类A中有实体B字段，实体B类中有实体A字段。
+								这种数据结构本身并不是什么问题。但是在进行json化时就会出现死循环现象。rabbit默认情况下为这种问题提供了规避机制。当我们从A实体"fetch"B实体时, 
+								B实体中包含的A实体只会拥有主键字段的值信息。
+							</div>
+							<section style="text-indent: 2em; font-weight: bold; margin: 10px 0px;">
+								7、过滤空或者非空条件的问题。	
+							</section>
+							<div style="padding-left: 4em; text-indent: 2em; line-height: 24px; margin-bottom: 5px;">
+								Rabbit的对象查询api默认是将对象中的非空属性作为过滤条件。但是我们实际的场景中可能会将null作为过滤条件。
+								我们可以动态添加一个过滤条件来实现这个功能。
+								
+							</div>
+							<section style="padding-left: 4em; text-indent: 0em;">
+								<pre class="brush:java">
+								&nbsp;
+//新增过滤条件name字段不为空
+addNullFilter("${name}", false)
+
+
+//新增过滤条件name字段为空
+addNullFilter("${name}")
+								
+								</pre>
+							</section>
+						</div>
+					</div>
+					
+					
+					
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+				$(function(){
+					window.hidetimer = null;
+					$("li.center a.center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+						$(this).closest("li.center").find(".project-center").fadeIn(500);
+					}, function(){
+						var pro = $(this).closest("li.center").find(".project-center");
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 100);
+					});
+					$(".project-center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+					},function(){
+						var pro = $(this);
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 500);
+					})
+				})
+				
+			</script>	
+			<div class="footer">
+				<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 9999; position:relative; overflow:hidden;">
+					<div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+				</div> -->
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+	
+</html>

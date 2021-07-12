@@ -1,0 +1,1022 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>我爱编程</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushBash.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("SpringDaoAdapter" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+			})		
+		</script>
+		<style type="text/css">
+			.capter section{
+				text-indent: 2em; 
+				line-height: 24px;
+				margin-top: 10px;
+				font-size: 14px;
+			}
+			.resource{
+				margin-right: -10px;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA; overflow-y: scroll;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><span class="ormh3">ORM Api Document</span></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>	
+		</div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		
+		<div class="content">
+			<div>
+				<div class="left nav">
+					<ul>
+						<li id="SpringDaoAdapter">Spring适配类</li>
+						<li id="DaoSupport">数据库支持类</li>
+						<li id="Query">查询操作接口</li>
+						<li id="Update">更新操作接口</li>
+						<li id="Delete">删除操作接口</li>
+						<li id="Insert">新增操作接口</li>
+						<li id="SQLQuery">SQL查询接口</li>
+						<li id="JdbcQuery">Jdbc查询接口</li>
+						<li id="Result">Result结果集</li>
+						<li id="Annotation">Rabbit&nbsp;&nbsp; 注解</li>
+					</ul>
+				</div>
+				<div class="right containers">
+					<div class="SpringDaoAdapter capter">
+						<p>SpringDaoAdapter</p>
+						<section>
+							SpringDaoAdapter是所有数据库相关的Service的桥接对象类。
+							所有需要直接操作表的服务都需要继承该类。该类提供了对表进行简单操作的API。
+							大致有如下一些。
+						</section>
+						<div>
+							<pre class="brush:java">
+							
+/**
+ * 
+ * 新增一条数据
+ * @param  data			新增的数据
+ * @throws Exception
+ * 
+ */							
+public int insert(T data) throws Exception;
+
+//获取数据总条数
+public long getCount() throws Exception;
+
+//获取满足过滤条件filterData的数据总条数
+public long getCount(T filterData) throws Exception;
+
+/**
+ * 清除data数据和clz对象的多对多中间表中关于data的所有记录
+ * @param data		需要被清除的数据对象, 该对象的主键字段的值不能为空
+ * @param clz		需要被清除的多端映射对象
+ * @throws Exception
+ */
+@Transaction
+public void clearJoinRecords(T data, Class&lt?&gt clz) throws Exception;
+
+/**
+ * 移除data的中间表数据
+ * @param data
+ * @param joinClz
+ * @throws Exception
+ */
+@Transaction
+public void removeJoinRecords(T data) throws Exception;
+
+/**
+ * 为data新增多对多中间表数据
+ * @param data
+ * @throws Exception
+ */
+@Transaction
+public void addJoinRecords(T data) throws Exception;
+
+/**
+ * 替换data对应的多对多中间表数据
+ * @param data
+ * @throws Exception
+ */
+@Transaction
+public void replaceJoinRecords(T data) throws Exception;
+
+/**
+ * 
+ * 根据主键查询数据
+ * @param id
+ * @throws Exception
+ * 
+ */
+public T queryByID(Serializable id) throws Exception;
+
+/**
+ * 
+ * 删除满足data条件的数据
+ * @param data			该对象中不为null的字段就是删除数据时的过滤条件
+ * @return 				删除的记录条数
+ * @throws SQLException
+ * 
+ */
+public int delete(T data) throws Exception;
+
+/**
+ * 
+ * 根据id删除数据
+ * @param id
+ * @return				删除的记录条数
+ * @throws Exception
+ * 
+ */
+public int deleteById(Object id) throws Exception;
+
+//删除表中所有数据
+public int deleteAll() throws Exception;
+
+
+/**
+ * 
+ * 将value中的非空字段更新到T对应的表中
+ * @param value		需要更新的字段以及值信息
+ * @param filter	过滤条件
+ * @return			影响的数据条数
+ * @throws SQLException
+ * 
+ */
+public int update(T value, T filter) throws Exception;
+
+/**
+ * 
+ * 根据主键更新数据
+ * @param value		该对象的主键字段必须有值
+ * @return			影响的数据条数
+ * @throws Exception
+ * 
+ */
+public int updateByID(T target) throws Exception;
+
+
+//获取DaoSupport对象
+public DaoSupport&ltT&gt getSupport();
+
+/**
+ * 
+ * 根据过滤条件查询数据
+ * @param  filter			过滤条件
+ * @throws Exception
+ * 
+ */
+public List&ltT&gt query(T filter) throws Exception;
+
+/**
+ * 根据过滤条件分页查询数据
+ * @param filter			过滤条件
+ * @param pageIndex			页码，从0开始
+ * @param pageSize			分页大小
+ * @throws Exception
+ */
+public List&ltT&gt query(T filter, int pageIndex, int pageSize) throws Exception;
+
+/**
+ * 直接分页查询数据
+ * @param pageIndex			页码，从0开始
+ * @param pageSize			分页大小
+ * @throws Exception
+ */
+public List&ltT&gt query(int pageIndex, int pageSize) throws Exception;
+
+/**
+ * 创建更新对象
+ * @throws Exception
+ */
+public Update&ltT&gt createUpdate() throws Exception;
+
+/**
+ * 创建删除对象
+ * @throws Exception
+ */
+public Delete&ltT&gt createDelete() throws Exception;
+	
+/**
+ * 创建查询对象
+ * @throws Exception
+ */
+public Query&ltT&gt createQuery() throws Exception;
+		
+/**
+ * 创建根据字段名字映射的更新对象
+ * @throws Exception
+ */
+public Update&ltT&gt createNameMappedUpdate(Object filterData) throws Exception;
+
+/**
+ * 创建根据字段名字映射的查询对象
+ * @throws Exception
+ */
+public Query&ltT&gt createNameMappedQuery(Object filterData) throws Exception;
+
+/**
+ * 创建根据字段名字映射的删除对象
+ * @throws Exception
+ */
+public Delete&ltT&gt createNameMappedDelete(Object filterData) throws Exception;
+
+							</pre>
+						</div>
+						<div>
+							
+						</div>
+					</div>
+					<div class="DaoSupport capter">
+						<p>DaoSupport</p>
+						<section>
+							该类为DML操作的入口类，我们可以用它创建Query、Delete、Update、Insert、SQLQuery、JdbcQuery等DML对象。
+							它当中主要的API有如下这些:
+						</section>
+						<div>
+							<pre class="brush:java">
+							
+/**
+ * 创建一个查询对象
+ * @param filter		查询条件
+ * @throws Exception
+ */							
+public Query&ltT&gt createQuery(T filter) throws Exception;	
+
+/**
+ * 创建一个不带过滤条件的查询对象
+ * @throws Exception
+ */							
+public Query&ltT&gt createQuery() throws Exception;	
+
+/**
+ * 
+ * 创建insert操作对象
+ * @param data		需要insert到表的数据
+ * @throws Exception 
+ * 
+ */
+public Insert&ltT&gt createInsert(T data) throws Exception;	
+
+/**
+ * 
+ * 创建一个用来空的Insert对象, 操作中间表记录时使用
+ * @throws Exception
+ * 
+ */
+public Insert&ltT&gt createInsert();
+	
+/**
+ * 
+ * 创建delete操作对象
+ * @param filter		删除数据时的过滤条件, 如果为null就表示没有过滤条件
+ * @return
+ * @throws SQLException
+ * 
+ */
+public Delete&ltT&gt createDelete(T filter);
+
+//创建一个不带任何过滤条件的Delete对象
+public Delete&ltT&gt createDelete() throws Exception;
+
+/**
+ * 
+ * 创建update操作对象
+ * @param filter		更新数据时的过滤条件, 如果为null就表示没有过滤条件
+ * @throws SQLException
+ * 
+ */
+public Update&ltT&gt createUpdate(T filter);
+
+//创建一个不带任何过滤条件的Update对象
+public Update&ltT&gt createUpdate() throws Exception;
+
+/**
+ * 
+ * 创建sql查询对象
+ * @param sql			sql语句
+ * @throws Exception
+ * 
+ */
+public SQLQuery&ltT&gt createSQLQuery(String sql) throws Exception;
+
+//创建一个执行原生sql的查询对象
+public JdbcQuery&ltT&gt createJdbcQuery(JdbcHandler handler);
+					
+							</pre>
+						</div>
+					</div>
+					<div class="Query capter">
+						<p>Query</p>
+						<section>
+							Query对象是整个rabbit体系中最强大的DML对象, 提供了丰富的API来适应各种复杂的sql应用场景。所有的API如下：
+						</section>
+						<div>
+							<pre class="brush:java">
+							
+/**
+ * 
+ * 动态新增一个inner join类型的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ *						"${字段名}"支持运算转换, 比如"${id}%2"
+ * @param ft			过滤条件(大于、小于、等于等等)
+ * @param value			字段reg的值
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public AbstractQuery&ltT&gt addFilter(String reg, Object value, FilterType ft, 
+		Class&lt?&gt... depsPath) throws Exception;
+
+/**
+ * 
+ * 动态新增一个FilterType为"FilterType.EQUAL"的inner join类型的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ *						"${字段名}"支持运算转换, 比如"${id}%2"
+ *
+ * @param value			字段reg的值
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public AbstractQuery&ltT&gt addFilter(String reg, Object value, Class&lt?&gt... depsPath) 
+		throws Exception;
+
+/**
+ * 
+ * 动态新增一个为空/非空的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param isNull		true表示空，false表示非空
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public AbstractQuery&ltT&gt addNullFilter(String reg, boolean isNull, Class&lt?&gt... depsPath) 
+		throws Exception;
+		
+ /** 
+ * 动态新增一个为空的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public AbstractQuery&ltT&gt addNullFilter(String reg, Class&lt?&gt... depsPath) 
+		throws Exception;
+		
+/**
+ * 
+ * 动态新增一个多对多/一对多过滤条件，过滤条件为left join类型
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ *						"${字段名}"支持运算转换, 比如"${id}%2"
+ * @param ft			过滤条件(大于、小于、等于等等)
+ * @param target		一对多或者多对多的多端实体类
+ * @param value			字段reg的值
+ * 
+ */
+public AbstractQuery&ltT&gt addJoinFilter(String reg, Object value, 
+			FilterType ft, Class&lt?&gt target) throws RabbitException;
+
+/**
+ * 
+ * 动态新增一个FilterType为"FilterType.EQUAL"的 多对多/一对多 过滤条件，过滤条件为left join类型
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ *						"${字段名}"支持运算转换, 比如"${id}%2"
+ * @param target		一对多或者多对多的多端实体类
+ * @param value			字段reg的值
+ * 
+ */
+public AbstractQuery&ltT&gt addJoinFilter(String reg, Object value, Class&lt?&gt target) 
+		throws RabbitException;
+
+/**
+ * 动态添加多对多过滤条件
+ * addJoinFilter添加的是left join过滤条件。该方法添加的是inner join过滤条件
+ * @param reg
+ * @param value
+ * @param ft
+ * @param target
+ */
+public AbstractQuery&ltT&gt addInnerJoinFilter(String reg, FilterType ft, Object value, 
+		Class&lt?&gt target) throws RabbitException;
+
+/**
+ * 动态添加多对多过滤条件
+ * addJoinFilter添加的是left join过滤条件。该方法添加的是inner join过滤条件(默认过滤条件是"等于")
+ * @param reg
+ * @param value
+ * @param target
+ */
+public AbstractQuery&ltT&gt addInnerJoinFilter(String reg, Object value, 
+		Class&lt?&gt target) throws RabbitException;
+	
+
+/**
+ * 
+ * 重新定义在createQuery时传递的inner join类型的查询条件, 对addFilter创建的过滤条件无效 
+ * @param reg 			字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param ft			过滤条件(大于、小于、等于等等)
+ * @param dependency	字段所在的实体类
+ * 
+ */
+public AbstractQuery&ltT&gt redefineFilter(String reg, FilterType ft, Class&lt?&gt dependency) 
+		throws RabbitException;
+
+/**
+ * 
+ * 重新定义在createQuery时传递的inner join类型的查询条件, 对addFilter创建的过滤条件无效 
+ * 						字段所在的类就是主表类。也就是泛型参数T代表的类。
+ *
+ * @param reg 			字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param ft			过滤条件(大于、小于、等于等等)
+ * 
+ */
+public AbstractQuery&ltT&gt redefineFilter(String reg, FilterType ft) 
+		throws RabbitException;
+
+/**
+ * 
+ * 重新定义joinFetch函数传递的left join类型的过滤条件, 对addJoinFilter创建的过滤条件无效 
+ * @param reg 			过滤的key的正则表达式
+ * @param ft			过滤条件(大于、小于、等于等等)
+ * @param dependency	字段所在的实体类
+ * 
+ */
+public AbstractQuery&ltT&gt redefineJoinFilter(String reg, FilterType ft,
+			Class&lt?&gt target) throws RabbitException;
+			
+/**
+ * 
+ * 重新定义joinFetch函数传递的left join类型的过滤条件, 对addJoinFilter创建的过滤条件无效 
+ * @param reg			过滤的key的正则表达式
+ * @param target		字段所在的实体类
+ * 
+ */
+public AbstractQuery&ltT&gt redefineJoinFilter(String reg, Class&lt?&gt target)
+		throws RabbitException;
+
+/**
+ * 
+ * 关联查询数据, clz所代表的类被关联查询以后，它的依赖路径上的所有类默认会被关联查出
+ * @param  clz			需要查询数据的实体类
+ * @param  depsPath		clz和主类T之间的依赖路径，默认不写就表示主类T就是clz的上级类
+ * 
+ */
+public AbstractQuery&ltT&gt fetch(Class&lt?&gt clz, Class&lt?&gt... depsPath) throws Exception;
+
+/**
+ * 
+ * left join查询出多对多或者一对多的数据
+ * @param clz			多对多或者一对多的实体类
+ * 
+ */
+public &ltE&gt AbstractQuery&ltT&gt joinFetch(Class&ltE&gt clz);
+
+/**
+ * 
+ * 带过滤条件的left join查询出多对多或者一对多的数据
+ * @param clz			多对多或者一对多的实体类
+ * @param filter		过滤条件, filter的过滤条件仅限于filter本身的字段。
+ *						如果关联有子表, 子表的字段无法被用做过滤条件
+ * 
+ */
+public &ltE&gt AbstractQuery&ltT&gt joinFetch(Class&ltE&gt clz, E filter);
+
+/**
+ * 
+ * 查询时给表设置别名，如果不设置将会采用默认的别名机制
+ * @param clz			实体类
+ * @param alias			别名
+ * 
+ */
+public AbstractQuery&ltT&gt alias(Class&lt?&gt clz, String alias);
+
+/**
+ * 
+ * 查询时按某个字段升序排列
+ * @param clz			实体类
+ * @param fieldName		排序的字段
+ * 
+ */
+public AbstractQuery&ltT&gt asc(String fieldName, Class&lt?&gt clz) throws Exception;
+
+/**
+ * 
+ * 查询时按主表的某个字段升序排列
+ * @param fieldName		主表实体类的字段名
+ * 
+ */
+public AbstractQuery&ltT&gt asc(String fieldName) throws Exception;
+
+/**
+ * 
+ * 查询时按某个字段降序排列
+ * @param clz			实体类
+ * @param fieldName		排序的字段
+ * 
+ */
+public AbstractQuery&ltT&gt desc(String fieldName, Class&lt?&gt clz) throws Exception;
+
+/**
+ * 
+ * 查询时按主表的某个字段降序排列
+ * @param fieldName		主表实体类的字段名
+ * 
+ */
+public AbstractQuery&ltT&gt desc(String fieldName) throws Exception;
+
+/**
+ * 
+ * 分页
+ * @param pageIndex		页码 从0开始
+ * @param pageSize		每页大小
+ * 
+ */
+public AbstractQuery&ltT&gt page(int pageIndex, int pageSize);
+
+//统计满足当前查询条件的结果条数
+public long count();
+
+//执行Query
+public Result&ltT&gt execute() throws Exception;
+							</pre>
+						</div>
+					</div>
+					
+					<div class="Update capter">
+						<p>Update</p>
+						<section>
+							Update实现了对主表数据的更新操作以及对中间表的部分操作。所有的API如下：
+						</section>
+						<div>
+							<pre class="brush:java">
+							
+/**
+ * 
+ * 更新data中主键字段代表的行数据
+ * @param data			包含主键信息以及需要更新的字段信息		
+ * @return 				受影响的数据条数
+ * 
+ */
+public int updateByID(T data)throws Exception;
+
+/**
+ * 
+ * 动态新增inner join过滤条件, 参数意义和Query对象的addFilter一致
+ * 
+ */
+public Update&ltT&gt addFilter(String reg, Object value, FilterType ft,
+			Class&lt?&gt... depsPath) throws Exception;
+
+/**
+ * 
+ * 动态新增inner join过滤条件, 参数意义和Query对象的addFilter一致
+ * 
+ */
+public Update&ltT&gt addFilter(String reg, Object value,
+			Class&lt?&gt... depsPath) throws Exception;
+			
+/**
+ * 
+ * 动态新增一个为空/非空的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param isNull		true表示空，false表示非空
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public Update&ltT&gt addNullFilter(String reg, boolean isNull, Class&lt?&gt... depsPath) 
+		throws Exception;
+		
+ /** 
+ * 动态新增一个为空的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public Update&ltT&gt addNullFilter(String reg, Class&lt?&gt... depsPath) 
+		throws Exception;
+					
+/**
+ * 
+ * 重新定义在creatUpdate时传递的inner join类型的过滤条件, 对addFilter创建的过滤条件无效 
+ * @param reg 			字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param ft			过滤条件(大于、小于、等于等等)
+ * @param dependency	字段所在的实体类
+ * 
+ */
+public Update&ltT&gt redefineFilter(String reg, FilterType ft,
+			Class&lt?&gt dependency) throws RabbitException;
+
+/**
+ * 
+ * 设置需要更新的字段的值
+ * @param value			设置需要更新的值, value中的非空字段都会被update
+ * 
+ */
+public Update&ltT&gt setValue(T value) throws SQLException;
+
+
+/**
+ * 
+ * 对单个字段设值, 如果该函数和setValue一起使用,那么该字段的值会覆盖value中的值, 
+ 						无论调用顺序是怎么样都会覆盖。
+ 						
+ * @param field			字段名
+ * @param value			值
+ * 
+ */
+public Update&ltT&gt set(String field, Object value);
+
+/**
+ * 
+ * 将字段的值强制更新成null, 该操作会覆盖set和setValue操作(无论调用顺序是怎么样都会覆盖)。
+ * @param fields		需要设置为空的字段名
+ * 
+ */
+public Update&ltT&gt setNull(String... fields);
+
+/**
+ * 
+ * 从many2many的中间表中替换数据(先移除再添加)
+ * @param data			需要替换的数据
+ * 
+ */
+public int replaceJoinRecords(T data) throws Exception
+
+//执行update
+public int execute() throws Exception;
+							</pre>
+						</div>
+					</div>
+					
+					<div class="Delete capter">
+						<p>Delete</p>
+						<section>
+							Delete实现了对主表数据的删除操作以及对中间表的部分操作。所有的API如下：
+						</section>
+						<div>
+							<pre class="brush:java">
+&nbsp;
+/**
+ * 
+ * 删除指定主键的数据
+ * @param id			需要删除的数据的主键值
+ * 
+ */
+public int deleteById(Object id) throws Exception;
+
+/**
+ * 
+ * 动态新增inner join过滤条件,过滤想要删除的数据。 参数意义和Query对象的addFilter一致
+ * 
+ */
+public Delete&ltT&gt addFilter(String reg, Object value, FilterType ft, 
+			Class&lt?&gt... depsPath) throws Exception;
+
+/**
+ * 
+ * 动态新增一个为空/非空的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param isNull		true表示空，false表示非空
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public Delete&ltT&gt addNullFilter(String reg, boolean isNull, Class&lt?&gt... depsPath) 
+		throws Exception;
+		
+ /** 
+ * 动态新增一个为空的过滤条件
+ * @param reg		 	字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param depsPath		该字段所在的类和其类的依赖路径。
+ * 
+ */
+public Delete&ltT&gt addNullFilter(String reg, Class&lt?&gt... depsPath) 
+		throws Exception;
+		
+/**
+ * 
+ * 重新定义在creatDelete时传递的inner join类型的过滤条件, 对addFilter创建的过滤条件无效 
+ * @param reg 			字段参数的表达式, 可以直接是字段名, 也可以是"${字段名}"格式。
+ * @param ft			过滤条件(大于、小于、等于等等)
+ * @param dependency	字段所在的实体类
+ * 
+ */
+public Delete&ltT&gt redefineFilter(String reg, FilterType ft,
+			Class&lt?&gt dependency) throws RabbitException;
+
+/**
+ * 
+ * 从many2many的中间表中移除数据
+ * @param data			需要移除的中间表数据信息
+ * 
+ */
+public int removeJoinRecords(T data) throws Exception;	
+
+/**
+ * 清除多对多中间表的记录
+ * @param data			主表数据, 主键字段必须有值
+ * @param clz			表示主表T和谁的中间表
+ * @return
+ * @throws Exception
+ */
+public void clearJoinRecords(T data, Class&lt?&gt clz) throws Exception;	
+
+//执行delete
+public int execute() throws Exception;	
+							</pre>
+						</div>
+					</div>
+
+					<div class="Insert capter">
+						<p>Insert</p>
+						<section>
+							Insert实现了对主表数据的新增操作以及对中间表的部分操作。所有的API如下：
+						</section>
+						<div>
+							<pre class="brush:java">
+&nbsp;
+/**
+ * 
+ * 构造函数, 开发者不会直接调用该函数, 该函数被DaoSupport调用,
+ * 其中data参数就是我们想要插入库的记录数据
+ * 
+ */
+public Insert(MetaData meta, DaoSupport&ltT&gt support, T data) throws SQLException;
+
+/**
+ * 
+ * 向many2many的中间表中插入数据
+ * @param data			需要插入中间表的数据信息
+ * @throws Exception
+ * 
+ */
+public int addJoinRecords(T data) throws Exception;
+
+//执行insert操作
+public int execute() throws Exception;
+
+							</pre>
+						</div>
+					</div>
+
+					<div class="SQLQuery capter">
+						<p>SQLQuery</p>
+						<section>
+							SQLQuery是1.0以前Query还不是那么强大的时候设计的过渡产品。它有条件地接收原生sql语句参数。目前的版本暂时保留了它。
+							今后的版本会逐步将其Deprecated。这里就不做详解了。我们的
+							<a href="./download" style="text-decoration: none; color: blue;">示例代码</a>
+							中保留了其相关的示例。
+						</section>
+					</div>
+
+					<div class="JdbcQuery capter">
+						<p>JdbcQuery</p>
+						<section>
+							虽然目前的Query对象已经很强大了，几乎所有的查询都能支撑。但是我们还是提供了一个完全支持原生sql查询的对象供大家使用。
+							具体的api使用在我们的
+							<a href="./download" style="text-decoration: none; color: blue;">示例代码</a>
+							中有其详尽的解释。
+						</section>
+					</div>
+					<div class="Result capter">
+						<p>Result</p>
+						<section>
+							Result对象是Query执行execute后返回的对象。它有两个接口函数供大家使用, 具体如下：
+						</section>
+						<div>
+							<pre class="brush:java">
+&nbsp;
+/**
+ * 取回结果集
+ * @return
+ */
+public List&ltT&gt list();
+
+/**
+ * 取回唯一的那个结果集
+ * @return
+ */
+public T unique();
+
+							</pre>
+						</div>
+					</div>
+					<div class="Annotation capter">
+						<p>Rabbit 注解</p>
+						<section>
+							Rabbit也像其它的ORM框架一样，提供了一套注解来解析类和表之间的关系以及用户的一些行为, 具体如下：
+						</section>
+						<div>
+							<pre class="brush:java">
+							&nbsp;
+// 标记字段的注解
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value=ElementType.FIELD)
+public @interface Column {
+
+	//字段在数据库中的名字
+	public String value();
+	
+	//查询数据的过滤条件
+	public FilterType filter() default FilterType.EQUAL;
+	
+	//查询条件之间的连接符
+	public ConnectorType connector() default ConnectorType.AND;
+	
+	//标识字段用来映射表,如果仅仅用作过滤条件, 就设置为false
+	public boolean usedForMapping() default true;
+	
+	//日期类型数据格式
+	public String pattern() default "yyyy-MM-dd HH:mm:ss";
+}
+
+//标记表实体
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value=ElementType.TYPE)
+public @interface Entity {
+	//表名
+	public String value();
+	
+}
+
+//多对多注解
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value=ElementType.FIELD)
+public @interface ManyToMany {
+
+	//一端对象在中间表中的外键名
+	public String joinColumn();
+	
+	//中间表的名字
+	public String joinTable();
+	
+	//多端对象在中间表中的外键名
+	public String reverseJoinColumn();
+	
+	public IDPolicy policy() default IDPolicy.IGNORE;
+	
+	//策略为sequence时的sequence的名字
+	public String sequence() default "";
+	
+	//中间表的主键字段名
+	public String id() default "";
+}
+
+//一对多映射
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value=ElementType.FIELD)
+public @interface OneToMany {
+
+	//外键名
+	public String joinColumn();
+}
+
+//标记主键字段
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value=ElementType.FIELD)
+public @interface PrimaryKey {
+
+	//主键策略, 默认无策略
+	public IDPolicy policy() default IDPolicy.IGNORE;
+	
+	//策略为sequence时的sequence的名字
+	public String sequence() default "";
+}
+
+//事务注解
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value=ElementType.METHOD)
+public @interface Transaction {}
+
+
+							</pre>
+						</div>
+					</div>
+					
+					
+					
+					
+				</div>
+			</div>
+		</div>			
+		<script type="text/javascript">
+			$(function(){
+				window.hidetimer = null;
+				$("li.center a.center").hover(function(){
+					if(null != window.hidetimer){
+						clearTimeout(window.hidetimer);
+					}
+					$(this).closest("li.center").find(".project-center").fadeIn(500);
+				}, function(){
+					var pro = $(this).closest("li.center").find(".project-center");
+					window.hidetimer = setTimeout(function(){
+						pro.fadeOut(500);
+					}, 100);
+				});
+				$(".project-center").hover(function(){
+					if(null != window.hidetimer){
+						clearTimeout(window.hidetimer);
+					}
+				},function(){
+					var pro = $(this);
+					window.hidetimer = setTimeout(function(){
+						pro.fadeOut(500);
+					}, 500);
+				})
+			})
+			
+		</script>		
+		<div>	
+			<div class="footer">
+				<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 9999; position:relative; overflow:hidden;">
+					<div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+				</div> -->
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+</html>

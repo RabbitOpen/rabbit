@@ -1,0 +1,982 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>Rabbit RPC 分布式远程过程调用</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushBash.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("start" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+				$(".xml a").css({
+					"text-decoration": "none",
+					"color": "blue"
+				})
+				$("a:contains('rabbit-open')").css("color", "fuchsia");
+			})		
+		</script>
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.capter section{
+				line-height: 24px;
+			}
+			.i2em{
+				text-indent: 2em;
+			}
+			.pl15{
+				padding-left: 25px !important;
+			}
+			.blue{
+				color: blue;
+			}
+			.gray{
+				color: gray;
+			}
+			div.cell{
+				float: left;
+				line-height: 24px;
+			}
+			div.p15{
+				width: 18%;
+			}
+			div.p85{
+				width: 82%;
+				text-indent: 0;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Rabbit RPC</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		
+		<div class="content">
+			<div>
+				<div class="left nav">
+					<ul>
+						<li id="start">新手上路</li>
+						<li id="Server">发布服务</li>
+						<li id="Client">消费服务</li>
+						<li id="balance">负载均衡</li>
+						<li id="tag">标签说明</li>
+						<li id="retry">故障恢复</li>
+						<li id="auth">认证鉴权</li>
+						<li id="event">事件监听</li>
+						<li id="spouter">即时推送</li>
+						<li id="boot">SpringBoot 整合</li>
+						<li id="manage">服务治理</li>
+						<li id="need2Know">开发须知</li>
+					</ul>
+				</div>
+				<div class="right containers">
+					<div class="start capter">
+						<div style="position: relative;">
+							<div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+								新手上路
+							</div>
+						</div>
+						<section class="i2em">
+							Rabbit RPC是一款java版的分布式远程过程调用技术。Rabbit内置完善的容错、重试机制。
+							你可以不用过度担心网络异常或者服务器故障带来的调用失败问题，从而专注于系统间业务的开发。
+						</section>
+						<section class="i2em">
+							另外Rabbit提供了可供开发者扩展的授权认证接口。开发者可以轻松地实现远程调用的认证和鉴权功能。Rabbit也暴露了部分rpc事件接口给开发者，
+							让开发者可以轻松定制自己的服务治理模块。
+							Rabbit早期的版本是可以独立使用的，但是使用起来相对麻烦。
+							所以在1.0以后我们提供了与Spring整合的方案版本，极大地简化了开发流程。
+						</section>
+						<section class="i2em">
+							Rabbit内置了两种路由发现策略(RABBIT和ZOOKEEPER)。"ZOOKEEPER"策略需要客户端和服务端共享一套zookeeper应用。
+							而"RABBIT"策略则不需要。在服务端不想将自己的zookeeper服务器暴露给对方时就可以使用"RABBIT"策略。
+							接下来我们将逐一介绍如何搭建Rabbit RPC环境。如何使用Rabbit提供的注解、标签进行rpc项目开发。首先引入rpc的依赖。
+						</section>
+						<pre class="brush:xml">
+							&nbsp;
+&ltdependency>
+	&ltgroupId>rabbit.open&lt/groupId>
+	&ltartifactId>rpc&lt/artifactId>
+	&ltversion>2.1.2&lt/version>
+&lt/dependency>
+						</pre>
+						
+						<section class="i2em">
+							Rabbit RPC的最新版本V3.0。该版本和旧版本最主要的区别在于配置声明上，配置更为清晰，明确。同时也开放了对SpoutWriter的支持，详情请参考
+							<a href="http://www.rabbit-open.top/rabbit/spoutwriter" style="color: blue; text-decoration: none;">Spout Writer</a>
+							章节。
+						</section>
+						<br/>
+						<section class="i2em">
+							如果还没有引入rabbit的maven库资源，那么的先在你的maven配置文件中加入rabbit的资源库信息。
+						</section>
+						<pre class="brush:xml">
+							&nbsp;
+&ltrepository>
+	&ltid>rabbit-open&lt/id>
+	&lturl>http://www.rabbit-open.top/nexus/content/groups/public/&lt/url>
+	&ltreleases>
+		&ltenabled>true&lt/enabled>
+	&lt/releases>
+	&ltsnapshots>
+		&ltenabled>false&lt/enabled>
+	&lt/snapshots>
+&lt/repository>
+						</pre>
+					</div>
+					
+					<div class="Server capter">
+						<p>发布服务</p>
+						<section class="i2em">
+							<label style="color:blue;">Rabbit的服务端是通过zookeeper来协调服务的。所以我们需要先部署一套zookeeper的环境</label>。
+							您可以在zookeeper的<a href="https://zookeeper.apache.org/doc/trunk/zookeeperStarted.html" style="text-decoration: none; color: blue;">官网</a>下载。
+							zookeeper的部署和启动都相当简单，这里就不做讲解了。
+						</section>
+						<section class="i2em">
+							然后我们需要通过配置<label class="blue">"applicationContext.xml"</label>文件来整合Rabbit和Spring。
+							整合步骤如下：首先引入rabbit的schema和xsd文件信息(示例代码中标红部分)。
+							然后通过<label class="blue">"&ltrabbit:registry/&gt"</label>标签声明服务的发布地址。
+							最后使用<label class="blue">"&ltrabbit:application/&gt"</label>标签声明服务的参数信息。如下：
+						</section>
+						<section>
+							<pre class="brush:xml">
+&lt?xml version="1.0" encoding="UTF-8"?>
+&ltbeans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.rabbit-open.top/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      	   http://www.springframework.org/schema/context
+      	   http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       	   http://www.rabbit-open.top/schema/rabbit
+       	   http://www.rabbit-open.top/schema/rabbit/rabbit-1.0.xsd">
+	
+	<!-- 配置Spring自动扫描, Spring -->
+	&lt;context:component-scan base-package="rabbit" />
+	
+	<!-- zookeeper服务注册中心地址 -->
+    &lt;rabbit:registry addr="localhost:2181"/>
+     
+    <!-- 服务发布信息 -->
+    <!-- rpc服务取名"RPC-DEMO" 服务地址localhost, 端口10086 -->
+    <!-- 如果想多个服务端同时提供服务,那么使用的name必须相同 -->
+    &lt;rabbit:application name="RPC-DEMO" ip="localhost" port="10086"/>
+    					
+&lt/beans>							
+							</pre>
+						</section>
+						<section class="i2em">
+							下面我们先构建一个Spring项目、然后编写一个RPC的服务端Service。
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.rpc.sample;
+
+import java.io.IOException;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Service;
+import rabbit.open.rpc.kernel.annotation.RpcService;
+import rabbit.open.rpc.spring.annotation.ParamName;
+
+/**
+ * 
+ * @RpcService 表明该类是一个rpc服务类， 命名空间为UserService
+ * 
+ * 它下面的public成员方法都将会被当成rpc服务暴露出去
+ * 
+ */
+@Service
+@RpcService(namespace="UserService")
+public class UserService {
+
+	//@ParamName 用来解释函数的参数在导出rpc服务代码时会用到
+	//根据用户名获取年龄
+	public int getAgeByName(@ParamName("name")String name){
+		return name.hashCode();
+	}
+	
+	//say hello
+	public String sayHello(@ParamName("name")String name){
+		return "hello " + name;
+	}
+	
+	//启动并发布RPC服务
+	public static void main(String[] args) {
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+				new String[]{"applicationContext.xml"});
+		context.start();
+		try {
+			System.in.read();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		context.close();
+	}
+}
+
+							</pre>
+						</section>
+						
+						
+					</div>
+					
+					<div class="Client capter">
+						<p>消费服务</p>
+						<section class="i2em">
+							Rabbit的客户端发现服务的策略有两种：ZOOKEEPER策略和RABBIT策略。默认使用是ZOOKEEPER策略。
+							这种策略需要服务端的ZOOKEEPER服务器对客户端可见。下面我们就以这种策略为例来写一个客户端应用。
+						</section>
+						<section class="i2em">
+							Rabbit的客户端开发分两步：第一步是整合Spring；第二步是编写RPC接口代码。
+							客户端和Spring整合相对来说比较简单，只需要配置下注册中心地址即可，如下：
+						</section>
+						<section>
+							<pre class="brush:xml">
+&lt?xml version="1.0" encoding="UTF-8"?>
+&ltbeans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.rabbit-open.top/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      	   http://www.springframework.org/schema/context
+      	   http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       	   http://www.rabbit-open.top/schema/rabbit
+       	   http://www.rabbit-open.top/schema/rabbit/rabbit-1.0.xsd">
+	
+	<!-- 配置Spring自动扫描, Spring -->
+	&lt;context:component-scan base-package="rabbit" />
+	
+	<!-- zookeeper服务注册中心地址 -->
+    &lt;rabbit:registry addr="localhost:2181"/>
+     
+&lt/beans>							
+							</pre>
+						</section>
+						<section class="i2em">
+							接口代码的开发也不复杂。分为三步，第一步先写一个接口类，里面提供的方法和服务端暴露的方法一致即可。
+							第二步是使用Rabbit提供的<label class="gray">"@Reference"</label>注解标识该接口。第三步则是注入bean。
+							以前面的服务端代码为例，我们开发一个客户端示例接口代码：
+						</section>
+						<section>
+							<pre class="brush:java">
+package rabbit.rpc.sample;
+
+import rabbit.open.rpc.kernel.annotation.Reference;
+import rabbit.open.rpc.nio.exception.RpcException;
+import rabbit.open.rpc.spring.annotation.ParamName;
+
+/**
+ *
+ *	该注解必须写正确 namesapce就是服务端暴露服务时填写的namespace
+ *	application则对应服务端&ltrabbit:application/&gt标签中的name属性
+ *  接口名和包路径可以任意修改, 但是方法名和参数不能修改
+ *
+ **/
+@Reference(namespace="UserService", application="RPC-DEMO")
+public interface UserService {
+
+	//根据用户名获取年龄
+	public int getAgeByName(String name) throws RpcException;
+	
+	//say hello
+	public String sayHello(String name) throws RpcException;
+	
+}
+							</pre>
+						</section>
+						<section class="i2em">
+							Rabbit提供了一个工具类，可以辅助我们生成上面的接口代码, 这里提供一个示例
+						</section>
+						<section>
+							<pre class="brush:java">
+package rabbit.rpc.sample;
+
+import rabbit.open.rpc.spring.ext.Exporter;
+import rabbit.open.rpc.spring.zookeeper.RegistryHelper;
+
+public class Tooll {
+
+	public static void main(String[] args) {
+
+		RegistryHelper registryHelper = new RegistryHelper("localhost:2181");
+		System.out.println(Exporter.export("RPC-DEMO", "UserService", registryHelper));
+		registryHelper.close();
+
+	}
+
+}							
+							</pre>
+						</section>						
+						<section class="i2em">
+							接下来就是随便找一个Spring的bean使用<label class="gray">"@Autowired"</label>或者<label class="gray">"@Resource"</label>注入即可
+						</section>
+						<section>
+							<pre class="brush:java">
+package rabbit.rpc.sample;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Service;
+
+@Service
+public class Client {
+
+	/**
+	 * 利用Spring的自动装配机制注入RPC服务
+	 */
+	@Autowired
+	private UserService userService;
+	
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public static void main(String[] args) {
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+				new String[]{"applicationContext.xml"});
+		context.start();
+		try {
+			Client client = context.getBean(Client.class);
+			System.out.println(client.getUserService().sayHello("zhangsan"));
+			System.out.println(client.getUserService().getAgeByName("zhangsan"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		context.close();
+	}
+}
+							</pre>
+						</section>
+					</div>
+					
+					<div class="balance capter">
+						<p>负载均衡</p>
+						<section class="i2em">
+							Rabbit内置的两种策略都是供客户端监听服务端使用的。客户端利用这两种策略来感知服务器节点的个数增减、
+							服务器节点上的连接个数变化等信息。
+							当客户端需要新增连接数时，客户端会优先选择连接数最小的那台服务器来建立连接。所有这些过程都是Rabbit的内置机制，
+							整个过程不需要人工干预。
+						</section>
+					</div>		
+					<div class="tag capter">
+						<p>标签说明</p>
+						<section class="i2em">
+							Rbbit是通过扩展Spring的schema来实现与Spring的整合功能。上面的示例代码使用的是Rabbit的最小化配置。
+							如果我们的项目结构本身就比较简单，那么上面的配置就足够了。但是实际应用的场景却很有可能远比这个复杂，
+							下面我们就通过对rabbit的标签进行详细讲解来介绍如果配置rabbit才能应对你的业务场景。
+						</section>
+					</div>		
+
+					<div style="padding-left: 2em;" >
+						<p>registry</p>
+						<section class="i2em">
+							标签<label class="blue">"&ltrabbit:registry/&gt"</label>用来申明服务的发布地址即注册中心。配置参数如下:
+							<div>
+								<div class="blue cell p15">addr：</div>
+								<div class="p85 cell">注册中心的地址。如果是服务端则必须是zookeeper地址。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">strategy：</div>
+								<div class="cell p85">客户端发现服务端的策略。默认是"ZOOKEEPER"，可以配置成"RABBIT"。如果是"RABBIT"，那么addr就必须是服务提供方的ip和端口信息。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">id：</div>
+								<div class="cell p85">注册中心编号，如果配置了多个registry。那么就用这个id来本地区分不同的注册中心。</div>
+							</div>
+						</section>
+					</div>		
+					<div style="padding-left: 2em;">
+						<p>application</p>
+						<section class="i2em">
+							标签<label class="blue">"&ltrabbit:application/&gt"</label>用来申明服务信息，一个服务端应用只能配置一个application。配置参数如下:
+							<div>
+								<div class="blue cell p15">name：</div>
+								<div class="p85 cell">应用的名称。同一个注册中心下不同类型的服务方不能使用同样的name。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">coreSize：</div>
+								<div class="p85 cell">服务端线程池初始核心线程个数，默认是5。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxSize：</div>
+								<div class="p85 cell">服务端线程池最大线程个数，默认是30。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">port：</div>
+								<div class="p85 cell">暴露服务的端口。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">ip：</div>
+								<div class="p85 cell">暴露服务的机器ip。默认使用本机ip，如果有多个网卡则最好指定一个ip。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxQueueSize：</div>
+								<div class="p85 cell">服务端任务处理等待队列长度。默认10000。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">authenticator：</div>
+								<div class="p85 cell">服务端认证鉴权处理类的Spring bean name。默认放行所有请求。
+								该类必须实现接口"<label class="gray">rabbit.open.rpc.kernel.auth.Authenticator</label>"。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">registryId：</div>
+								<div class="p85 cell">当服务端配置了多个registry时, 用该属性来区分服务需要发布的注册中心信息。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">listener：</div>
+								<div class="p85 cell">服务端事件监听处理bean。必须实现接口"<label class="gray">rabbit.open.rpc.nio.server.ext.RPCListener</label>"。</div>
+							</div>
+						</section>
+					</div>
+					<div style="padding-left: 2em;">
+						<p>pool</p>
+						<section class="i2em">
+							标签<label class="blue">"&ltrabbit:pool/&gt"</label>用来配置客户端连接池信息，一个应用可以配置多个pool信息。配置参数如下:
+							<div>
+								<div class="blue cell p15">application：</div>
+								<div class="p85 cell">应用的名称。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxSize：</div>
+								<div class="p85 cell">客户端连接池最大连接数。默认30</div>
+							</div>
+							<div>
+								<div class="blue cell p15">minSize：</div>
+								<div class="p85 cell">客户端连接池最小连接数。默认5</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxRetryCount：</div>
+								<div class="p85 cell">客户端调用异常重试次数(主要指网络异常，正常的业务异常是不会重试的)。默认重试10次，"-1"表示无限重试。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">username：</div>
+								<div class="p85 cell">服务端认证的帐号。默认是"anonymousUser"</div>
+							</div>
+							<div>
+								<div class="blue cell p15">password：</div>
+								<div class="p85 cell">服务端认证的密码。默认是""</div>
+							</div>
+							<div>
+								<div class="blue cell p15">registryId：</div>
+								<div class="p85 cell">
+									注册中心的id。如果配置了多个注册中心，就需要用该字段来区分。
+									需要注意是：如果pool指定了registryId。那么对应的rpc接口类中的
+									<label class="gray">"@Reference"中</label>也需要指明registryId信息。
+								</div>
+							</div>
+						</section>
+					</div>
+
+					<div style="padding-left: 2em;">
+						<p>scanner</p>
+						<section class="i2em">
+							标签<label class="blue">"&ltrabbit:scanner/&gt"</label>用来用来配置rabbit扫描的包路径, 一个应用最多配置一个。默认扫描整个工程。配置参数如下:
+							<div>
+								<div class="blue cell p15">packages：</div>
+								<div class="p85 cell">包路径。多个包用","分割开。</div>
+							</div>
+						</section>
+					</div>
+					<div class="retry capter">
+						<p>故障恢复</p>
+						<section class="i2em">
+							Rabbit内置了网络异常重试机制，您可以不用担心某台服务器突然down机带来的调用失败问题。
+							 rabbit会自动找寻其它服务节点完成请求。业务调用发生的异常不会触发重试机制。
+						</section>
+					</div>		
+					<div class="auth capter">
+						<p>认证鉴权</p>
+						<section class="i2em">
+							Rabbit默认就开启了认证模式。服务端默认对所有用户开放所有接口的调用权限，
+							而客户端则是默认使用 "anonymousUser"用户进行认证。如果我们想定制自己的认证鉴权逻辑，
+							那么我们只需要开发一个自己的"Authenticator"即可：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.rpc.sample;
+
+import org.springframework.stereotype.Component;
+import rabbit.open.rpc.kernel.auth.Authenticator;
+import rabbit.open.rpc.kernel.auth.RpcAuthUser;
+
+/**
+ * 
+ * 自己的认证逻辑
+ */
+@Component("MyAuthenticator")
+public class MyAuthenticator implements Authenticator{
+
+	//帐号和密码相同则认证成功
+	@Override
+	public boolean authenticate(RpcAuthUser user) {
+		return user.getUsername().equals(user.getPassword());
+	}
+
+	@Override
+	public boolean authorityCheck(String username, String namespace,
+			String method) {
+		//所有方法都可以调用
+		return true;
+	}
+
+}
+
+							</pre>
+						</section>
+						<section class="i2em">
+							然后配置"application"时指定authenticator即可
+						</section>
+						<section>
+							<pre class="brush:xml">
+							&nbsp;
+							&nbsp;
+&lt!-- 指定自己的认证处理器  -->
+&ltrabbit:application name="RPC-DEMO" ip="localhost" port="10086" 
+		authenticator="MyAuthenticator"/>
+							</pre>
+						</section>
+						
+						<section class="i2em">
+							如果服务端开启了自定义的认证模式，那么客户端就需要通过配置帐号密码来通过服务端的认证：
+						</section>
+						<section>
+							<pre class="brush:xml">
+							&nbsp;
+							&nbsp;
+&lt!-- 帐号密码一般是由服务端分配的  -->
+&ltrabbit:pool application="RPC-DEMO" username="zhangsan" password="zhangsan"/>
+							</pre>
+						</section>
+					</div>		
+					<div class="event capter">
+						<p>事件监听</p>
+						<section class="i2em">
+							Rabbit对外暴露了一个服务端事件接口(只有服务端才能使用)，您可以通过注册接口监听事件来监听Rabbit的整个调用过程。
+							需要注意的是：所有事件都是同步事件，如果我们在事件处理逻辑中处理大量的业务势必就会影响到业务代码的调用效率。
+							事件接口必须实现接口类<label class="gray">"rabbit.open.rpc.nio.server.ext.RPCListener"</label>，如下：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.rpc.sample;
+
+import org.springframework.stereotype.Service;
+import rabbit.open.rpc.nio.exception.RpcException;
+import rabbit.open.rpc.nio.server.ChannelAgent;
+import rabbit.open.rpc.nio.server.ext.RPCListener;
+
+@Service("MyListener")
+public class MyListener implements RPCListener{
+
+	/**
+	 * 客户端连接事件
+	 */
+	@Override
+	public void connected(ChannelAgent agent) throws Exception {
+		System.out.println(agent.getUsername() + " connected");
+	}
+
+	/**
+	 * 客户端断开连接事件
+	 */
+	@Override
+	public void disConnected(ChannelAgent agent) throws Exception {
+		System.out.println(agent.getUsername() + " disConnected");
+		
+	}
+
+	/**
+	 * 方法调用前置事件
+	 * 可以通过throws RpcException来阻断方法的调用，该异常将会被客户端捕获到
+	 */
+	@Override
+	public void beforeMethodCalled(String caller, String namespace,
+			String method, Class&lt?>[] argtyps) throws RpcException {
+		System.out.println(caller + " is invoking method[" 
+					+ method + "] with namespace[" + namespace + "]" );
+	}
+
+	/**
+	 * 方法调用后置事件
+	 */
+	@Override
+	public void afterMethodCalled(String caller, String namespace,
+			String method, Class&lt?>[] argtyps) throws RpcException {
+		System.out.println(caller + " invoked method[" 
+					+ method + "] with namespace[" + namespace + "]" );
+		
+	}
+
+}
+							</pre>
+						</section>
+						<section class="i2em">
+							接下来把事件注册到rabbit中去即可实现事件的监听处理。
+						</section>
+						<section>
+							<pre class="brush:xml">
+							&nbsp;
+							&nbsp;
+&lt!-- 注册事件 listener中配置的是spring bean的名字信息  -->
+&ltrabbit:application name="RPC-DEMO" ip="localhost" port="10086" 
+				listener="MyListener"/>
+							</pre>
+						</section>
+					</div>	
+					<div class="spouter capter">
+						<p>即时推送</p>
+						<section class="i2em">
+							Rabbit 2.0以后的版本新增了即时推送的功能，详情请参考
+							<a style="text-decoration: none; color: blue;" href="./spouter">spouter</a>
+							项目。
+						</section>
+					</div>	
+					<div class="boot capter">
+						<p>Spring-Boot整合</p>
+						<section class="i2em">
+							目前很多公司都已经在使用SpringBoot进行j2ee的项目开发。如果项目使用了配置文件，那么完全可以使用我们上面介绍的方法与Rabbit进行整合。
+							我们这里主要介绍一下零配置项目怎么整合Rabbit。零配置并不是不需要进行配置，只是使用了注解代替配置。
+							我们以上面的客户端为例演示一下如何配置：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.rpc.sbt;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import rabbit.open.rpc.spring.bean.PoolBean;
+import rabbit.open.rpc.spring.bean.RegistryBean;
+import rabbit.open.rpc.spring.bean.RegistryBean.Strategy;
+import rabbit.open.rpc.spring.schema.RegistryBeanDefinition;
+
+@Configuration
+public class MyConfig {
+
+	/**
+	 * 
+	 * 配置rabbit的registry入口
+	 * 
+	 */
+	@Bean()
+	@Lazy(false)
+	public RegistryBean registry(){
+		RegistryBean rb = new RegistryBean();
+		rb.setAddr("localhost:10086");
+		rb.setStrategy(Strategy.RABBIT.name());
+		return rb;
+	}
+	
+	/**
+	 * 
+	 * 配置rabbit的连接池
+	 */
+	@Bean()
+	@Lazy(false)
+	public PoolBean pool(){
+		PoolBean pb = new PoolBean();
+		pb.setApplication("RPC-DEMO");
+		pb.setUsername("zhangsan");
+		pb.setPassword("zhangsan");
+		return pb;
+	}
+	
+	/**
+	 * 
+	 * 该项必不可少，它是Spring和Rabbit的桥接点
+	 * 
+	 */
+	@Bean()
+	@Lazy(false)
+	public RegistryBeanDefinition registryBeanDefinition(){
+		return new RegistryBeanDefinition();
+	}
+}
+
+
+							</pre>
+						</section>
+					</div>
+					<div class="manage capter">
+						<p>服务治理</p>
+						<section class="i2em">
+							服务治理对于很多服务型架构来说都是十分重要的，Rabbit也考虑到了这点。
+							前面提及的认证鉴权、事件监听都属于服务治理一类的应用扩展。
+							另外Rabbit还提供了一个工具类
+							<label class="gray">"rabbit.open.rpc.spring.zookeeper.RpcManager"</label>。
+							利用该类提供的API我们可以查看很多关于RPC服务端的系统信息。
+							通过对这些信息进行整合和扩展我们就能定制开发出属于自己的服务治理应用。
+							该工具类目前暴露的方法如下：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+/**
+ * 
+ * 获取应用服务[appName]下命名空间[namespace]中暴露的RPC方法信息
+ * @param 	appName	
+ * @param 	namespace
+ * @return
+ * 
+ */
+public List&ltString> getMethods(String appName, String namespace);
+
+/**
+ * 
+ * 获取应用下所有的服务器信息
+ * @param appName
+ * @return
+ * 
+ */
+public List&ltProvider> getProviders(String appName);
+
+/**
+ * 
+ * 读取应用[appName]下服务器[provider]中的客户端连接信息
+ * @param appName
+ * @param provider		Provider.getHostString()方法返回的字符串信息
+ * @return
+ * 
+ */
+public ConcurrentHashMap&ltString, Map&ltString, AtomicInteger&gt&gt 
+				readMetaData(String appName, String provider);
+	
+							</pre>
+						</section>
+						<section class="i2em">
+							我们以前面的示例为例, 写一段测试代码如下：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package sample;
+
+import java.util.List;
+import org.apache.log4j.Logger;
+import rabbit.open.rpc.nio.client.ext.Provider;
+import rabbit.open.rpc.spring.zookeeper.RpcManager;
+
+public class RpcTest {
+
+	static Logger logger = Logger.getLogger(RpcTest.class);
+	
+	public static void main(String[] args) {
+		
+		//实例化一个RpcManager对象，入参为zookeeper服务器地址信息
+		RpcManager rm = new RpcManager("localhost:2181");
+		
+		//查看应用[RPC-DEMO]下命名空间[UserService]中暴露的rpc方法信息
+		List&ltString> methods = rm.getMethods("RPC-DEMO", "UserService");
+		logger.info("");
+		logger.info("============ methods ===============");
+		for(String m : methods){
+			logger.info( m);
+		}
+		
+		//查看应用[RPC-DEMO]下的服务器信息
+		logger.info("");
+		logger.info("============ providers ===============");
+		List&ltProvider> providers = rm.getProviders("RPC-DEMO");
+		for(int i = 0; i < providers.size(); i++){
+			String provider = providers.get(i).getHostString();
+			logger.info(provider);
+			//查看服务器中的客户端连接信息
+			logger.info("clients:[" + rm.readMetaData("RPC-DEMO", provider) + "]");
+		}
+		rm.close();
+	}
+}
+
+							</pre>
+						</section>
+						<section class="i2em">
+							如果我们的客户端和服务端都在处于运行状态，那么我们就会得到如下信息:
+						</section>
+						<section>
+							<pre class="brush:xml">
+							&nbsp;
+17:24:48  INFO [sample.RpcTest.main]  
+17:24:48  INFO [sample.RpcTest.main]  ============ methods ===============
+17:24:48  INFO [sample.RpcTest.main]  public int getAgeByName(java.lang.String name)
+17:24:48  INFO [sample.RpcTest.main]  public java.lang.String sayHello(java.lang.String name)
+17:24:48  INFO [sample.RpcTest.main]  
+17:24:48  INFO [sample.RpcTest.main]  ============ providers ===============
+17:24:48  INFO [sample.RpcTest.main]  localhost:10086
+17:24:48  INFO [sample.RpcTest.main]  clients:[{zhangsan={127.0.0.1=1}}]							
+							</pre>
+						</section>
+						<section class="i2em">
+							methods和providers信息都很好理解。函数"readMetaData"返回的对象是一个map，
+							key就是客户端的用户信息，value是一个map。map中的key代表的是client的ip信息，value是连接数信息。
+							"clients:[{zhangsan={127.0.0.1=1}}]"代表的意思就是用户 "zhangsan"
+							从地址"127.0.0.1"向本机建立了1个tcp连接。
+						</section>
+					</div>	
+					<div class="need2Know capter">
+						<p>开发须知</p>
+						<div style="padding-left:2em;">
+							<section style="font-weight: bold;">
+							1、Rabbit技术原理那点事。	
+							</section>
+							<section style="text-indent: 2em; line-height: 24px;">
+								Rabbit底层采用nio + 多线程技术实现客户端和服务端的并发通信。客户端和服务端的数据传输使用的是kryo进行数据序列化。
+								上层应用通过扩展Spring的schema来实现和spring的整合，目的就是最大程度简化开发流程。
+							</section>
+							<section style="font-weight: bold;">
+							2、服务端节点热拔插问题	
+							</section>
+							<section style="text-indent: 2em; line-height: 24px;">
+								正常情况下Rabbit会随着Spring容器的销毁而进行正常安全退出。不过由于Rabbit内部有自己的网络异常重试机制，
+								所以就算应用异常退出也不要紧，它也不会影响到客户端的正常调用逻辑。我们可以随时拔插服务端节点。
+							</section>
+							<section style="font-weight: bold;">
+							3、自定义Bean参数传输那点事
+							</section>
+							<section style="text-indent: 2em; line-height: 24px;">
+								我们的示例代码都是以java的基础数据类型作为参数进行演示。这并不是说Rabbit无法传输我们自定义的Bean。
+								需要注意的是我们的客户端bean和服务端的bean一定要保持一致。如果由于版本原因导致了结构不一致，
+								那么很可能就会出现字段信息错位的问题，请谨慎！
+							</section>
+							<section style="font-weight: bold;">
+							4、Rabbit内部连接管理那点事	
+							</section>
+							<section style="text-indent: 2em; line-height: 24px;">
+								Rabbit的客户端管理的是tcp连接池，当调用的rpc服务来自不同的application时会建立多个池。
+								当池中的连接降低到最小连接数时，客户端就会向服务端发送心跳信息。
+								服务端如果发现有哪个连接超过5分钟没有活动（数据通信或者发送心跳）就会主动断开该连接。
+								正常情况下客户端超过3分钟没活动的连接会被客户端主动关闭。
+							</section>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+				$(function(){
+					window.hidetimer = null;
+					$("li.center a.center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+						$(this).closest("li.center").find(".project-center").fadeIn(500);
+					}, function(){
+						var pro = $(this).closest("li.center").find(".project-center");
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 100);
+					});
+					$(".project-center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+					},function(){
+						var pro = $(this);
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 500);
+					})
+				})
+				
+			</script>			
+			<div class="footer">
+				<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 9999; position:relative; overflow:hidden;">
+					<div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+				</div> -->
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+	
+</html>

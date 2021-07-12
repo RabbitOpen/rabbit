@@ -1,0 +1,699 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源中心 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>Spouter 分布式切片推送</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushBash.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("start" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+				$(".xml a").css({
+					"text-decoration": "none",
+					"color": "blue"
+				})
+				$("a:contains('rabbit-open')").css("color", "fuchsia");
+			})		
+		</script>
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.capter section{
+				line-height: 24px;
+			}
+			.i2em{
+				text-indent: 2em;
+			}
+			.pl15{
+				padding-left: 25px !important;
+			}
+			.blue{
+				color: blue;
+			}
+			.gray{
+				color: gray;
+			}
+			div.cell{
+				float: left;
+				line-height: 24px;
+			}
+			div.p15{
+				width: 24%;
+			}
+			div.p85{
+				width: 76%;
+				text-indent: 0;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Rabbit Spouter</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		
+		<div class="content">
+			<div>
+				<div class="left nav">
+					<ul>
+						<li id="start">项目简介</li>
+						<li id="Server">发布服务</li>
+						<li id="Client">数据订阅</li>
+						<li id="mode">工作模式</li>
+						<li id="tag">标签说明</li>
+						<li id="retry">故障恢复</li>
+						<li id="need2Know">开发须知</li>
+					</ul>
+				</div>
+				<div class="right containers">
+					<div class="start capter">
+						<div style="position: relative;">
+							<div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+								项目简介
+							</div>
+						</div>
+						<section class="i2em">
+							Rabbit Spouter是一款基于
+							<a href="./rpc" class="blue" style="text-decoration: none;">Rabbit RPC</a>
+							的分布式即时推送技术。Spouter采用的是分片推送机制。
+							服务端集群中的每个节点在启动后都会尝试去抢占一个切片资源，抢占到切片资源的节点将会为客户端集群提供数据推送服务，
+							没有抢到切片资源的节点则会作为备用节点监听其它切片节点，如果有切片节点down掉，
+							那么备用节点将会接管它的服务。所以我们建议服务端配置的切片数略小于服务端集群节点总数。
+							而客户端集群中具备相同订阅id的节点会被固定hash到同一个服务器节点上获取推送数据。实际上我们也推荐这么做！
+						</section>
+						<section class="i2em">
+							Spouter的maven依赖如下：
+						</section>
+						<pre class="brush:xml">
+							&nbsp;
+&ltdependency>
+	&ltgroupId>rabbit.open&lt/groupId>
+	&ltartifactId>spouter&lt/artifactId>
+	&ltversion>1.2.0&lt/version>
+&lt/dependency>
+
+&lt!-- 只有2.0 以上的rpc才支持Spouter推送 -->
+&ltdependency>
+	&ltgroupId>rabbit.open&lt/groupId>
+	&ltartifactId>rpc&lt/artifactId>
+	&ltversion>2.1.2&lt/version>
+&lt/dependency>
+						</pre>
+						<section class="i2em">
+							Rabbit Spouter的最新版本V3.0。该版本和旧版本最主要的区别在于配置声明上，配置更为清晰，明确。同时也开放了对SpoutWriter的支持，详情请参考
+							<a href="http://www.rabbit-open.top/rabbit/spoutwriter" style="color: blue; text-decoration: none;">Spout Writer</a>
+							章节。
+							使用之前请记得先在maven中添加rabbit的配置信息：
+						</section>
+						<pre class="brush:xml">
+								&nbsp;
+&ltrepository>
+	&ltid>rabbit-open&lt/id>
+	&lturl>http://www.rabbit-open.top/nexus/content/groups/public/&lt/url>
+	&ltreleases>
+		&ltenabled>true&lt/enabled>
+	&lt/releases>
+	&ltsnapshots>
+		&ltenabled>false&lt/enabled>
+	&lt/snapshots>
+&lt/repository>
+							</pre>
+					</div>
+					
+					<div class="Server capter">
+						<p>发布服务</p>
+						<section class="i2em">
+							spouter是基于rabbit-rpc开发的推送服务。它的服务发布也是基于rpc服务的。所以服务端的配置和rabbit-rpc的很相似，
+							只是多了一个"spouter"标签而已。当然我们得先引入rabbit的schema和xsd文件信息(示例代码中标红部分)
+						</section>
+						<section>
+							<pre class="brush:xml">
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.rabbit-open.top/schema/rabbit"
+	xmlns:rs="http://www.rabbit-open.top/schema/spouter"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      	   http://www.springframework.org/schema/context
+      	   http://www.springframework.org/schema/context/spring-context-4.0.xsd
+      	   http://www.rabbit-open.top/schema/spouter
+       	   http://www.rabbit-open.top/schema/spouter/spouter-1.0.xsd
+       	   http://www.rabbit-open.top/schema/rabbit
+       	   http://www.rabbit-open.top/schema/rabbit/rabbit-1.0.xsd">
+	
+	<!-- 配置Spring自动扫描, Spring -->
+	&lt;context:component-scan base-package="rabbit" />
+	
+	<!-- zookeeper服务注册中心地址 -->
+    &lt;rabbit:registry addr="localhost:2181"/>
+     
+    <!-- 服务发布信息 -->
+    <!-- rpc服务取名"SimpleRpc" 服务地址localhost, 端口10086 -->
+    <!-- 如果想多个服务端同时提供服务,那么使用的name必须相同 -->
+    <!-- 如果只是想使用数据推送功能，就可以不用开发rpc服务代码 -->
+    &lt;rabbit:application name="SimpleRpc" ip="localhost" port="10086"/>
+    
+    
+    <!-- 定义一个架设在rpc服务【SimpleRpc】之上的数据推送服务, 服务器切片个数为1 -->
+    &lt;rs:spouter appName="SimpleRpc" shards="1" />
+    
+    					
+&lt;/beans>							
+							</pre>
+						</section>
+						<section class="i2em">
+							然后就是开发一个Spouter推送服务, 举个例子如下：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.rpc.spoutserver;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import rabbit.open.rpc.kernel.spouter.Topic;
+import rabbit.open.spouter.server.SpouterAdapter;
+
+
+/**
+ * 
+ * 随便写一个Spring的service, 继承自SpouterAdapter即可
+ * 
+ */
+@Service
+public class SimpleSpouter extends SpouterAdapter{
+
+	/***
+	 * 如果有客户端连接上来该方法就会被触发。
+	 * @param 	username 客户端认证时使用的帐号
+	 * @param	topic	客户端调用订阅数据接口时传递给服务端的参数
+	 */
+	@Override
+	protected void connected(String username, Object topic) {
+		logger.info(username + " connected");
+		List&lt;String> list = new ArrayList&lt;String>();
+		list.add("hello1");
+		list.add("hello9");
+		list.add("hello0");
+		//向客户端集群中的某一节点推送一次数据
+		dispatch(list);
+	}
+	
+	//服务器集群中的数据成功写入发送缓冲区后触发该方法
+	@Override
+	public void dispatched(Object data, String username) {
+		logger.info("data[" + data + " dispatched");
+	}
+	
+	/**
+	 * 数据被丢弃
+	 * 调用dispatch后没有找到通道发送该数据就会触发该方法
+	 * 每次dispatch最多触发一次该方法
+	 * 
+	 */
+	@Override
+	public void discarded(Object data){};
+	
+	/**
+	 * 数据推送失败
+	 * 数据推送过程中由于io导致的数据发送失败
+	 * 如果该数据被允许发送给不同的用户，那么该数据就可能触发出现多次该事件
+	 */
+	@Override
+	public void dispatchFailed(Object data, String username){};
+	
+	
+	/***
+	 * spouter成功抢占到切片号后触发该事件方法
+	 * @param 	shards 切片号
+	 */
+	@Override
+	public void shardsCaptured(int shards){};
+	
+	/*****
+	 * 
+	 * 服务端分发数据前置控制
+	 * return false 表示丢弃当前这次发送
+	 * 
+	 **/
+	@Override
+	protected boolean onDispatch(Object data, Object params, String username) {
+		return true;
+	}
+	
+	/***
+	 * 当【username】代表的客户端集群中的第一个节点连接上来时
+	 * Spouter会触发该方法，将返回的数据推送给该集群中的某一个节点
+	 * 如果该用户的客户端集群全部下线，再上线，第一个节点连接上来时还会再次触发该方法
+	 */
+	@Override
+	protected Object findDoubtfulData(String username, Object params) {
+		List&lt;String> arr = new ArrayList&lt;String>();
+		arr.add("h1");
+		arr.add("ak47");
+		return arr;
+	}
+	
+	//客户端任何一个节点和服务器断开后触发该方法
+	@Override
+	protected void disconnected(String username) {
+		logger.info(username + " disconnected");
+	}
+	
+	//spouter对象被spring初始化后触发该方法
+	@Override
+	protected void afterInitialized() throws Exception {
+		logger.info("SimpleSpouter initialized!");
+	}
+}
+
+							</pre>
+						</section>
+						<section class="i2em">
+							上面的示例代码中包括了Spouter允许被重载的所有方法以及他们被触发的时机。
+							被重载的所有方法都是由Spouter体系触发的。作为服务端我们允许被主动调用的方法就只有如下两个。
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+/**
+ * 
+ * 向客户端集群分发数据，相同用户的集群中有且最多有一个节点收到数据
+ * 如果成功发送到io缓冲区dispatched方法则会被触发，
+ * 如果某个用户下没有可用的通道，则不会向该用户发送数据
+ * @param  data
+ * 
+ */
+public final void dispatch(Object data);
+
+/**
+ * 
+ * 向特定用户(username)对应的端集群分发数据，该集群中有且最多有一个节点收到数据
+ * @param  data
+ * @param  username
+ * 
+ */
+public final void dispathDoubtfulData(Object data, String username) throws Exception;
+
+							</pre>
+						</section>
+						<section class="i2em">
+							V1.1.1以后的SpouterAdapter新增了两个API来获取切片相关的环境数据，之前的版本需要开发者自己从配置文件读取。
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+/**
+ * 获取当前节点的切片号，-1代表该节点是备用节点
+ */
+public long getShardNum();
+
+/**
+ * 获取切片总数
+ */
+public long getShards();
+
+							</pre>
+						</section>
+					</div>
+					
+					<div class="Client capter">
+						<p>数据订阅</p>
+						<section class="i2em">
+							Spouter的客户端开发分两步：第一步先整合Spring，如下所示：
+						</section>
+						<section>
+							<pre class="brush:xml">
+							&nbsp;
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:rabbit="http://www.rabbit-open.top/schema/rabbit"
+    xmlns:rs="http://www.rabbit-open.top/schema/spouter"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd
+           http://www.rabbit-open.top/schema/spouter
+       	   http://www.rabbit-open.top/schema/spouter/spouter-1.0.xsd
+           http://www.rabbit-open.top/schema/rabbit
+           http://www.rabbit-open.top/schema/rabbit/rabbit-1.0.xsd">
+	
+	<!-- 配置Spring自动扫描, Spring -->
+	&lt;context:component-scan base-package="rabbit" />
+	
+	<!-- zookeeper服务注册中心地址 -->
+    &lt;rabbit:registry addr="localhost:10086" strategy="RABBIT"/>
+	
+	<!-- 定义客户端rpc连接池 -->
+	&lt;rabbit:pool application="SimpleRpc" username="zhangsan" password="zhangsan"
+		name="simplePool"
+		/>
+	
+	<!-- 声明一个在连接池【simplePool】上的订阅服务 -->			 
+	&lt;rs:subscriber poolName="simplePool"/>
+     
+&lt/beans>							
+							</pre>
+						</section>
+						<section class="i2em">
+							然后是开发一个数据订阅服务，示例如下：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+package rabbit.open.spouter.test;
+
+import org.springframework.stereotype.Service;
+import rabbit.open.spouter.annotation.Subscriber;
+import rabbit.open.spouter.client.adapter.SubscribeAdapter;
+
+@Service
+@Subscriber(poolName="simplePool")
+public class SimpleSubscriber extends SubscribeAdapter{
+
+	/**
+	 * 接收到来自服务端的数据后触发该方法
+	 */
+	@Override
+	public void dataReceived(Object data) {
+		logger.info("data received:\t" + data);
+	}
+	
+	/**
+	 * 成功和服务端建立推送通道后触发该方法
+	 * @param	host		服务端机器ip
+	 * @param	port		服务端端口号
+	 * @param	shard		服务端的切片号
+	 */
+	@Override
+	public void connected(String host, int port, int shard) {
+		logger.info("connected success[" + host + ": " + port + "] by " + shard);
+	}
+
+	/**
+	 * 客户端订阅对象被Spring初始化后触发该方法
+	 */
+	@Override
+	protected void afterInitialized() throws Exception {
+		logger.info("SimpleSubscriber initialized");
+		//向服务端订阅数据
+		subscribe();
+	}
+
+	/***
+	 * 接收到可疑数据后触发该方法
+	 */
+	@Override
+	public void doubtfulDataReceived(Object data) {
+		logger.info("doubtful data received:\t" + data);
+		
+	}
+	
+}
+
+							</pre>
+						</section>
+						<section class="i2em">
+							作为Spouter客户端的核心对象，提供给开发者主动调用的api也只有两个：
+						</section>
+						<section>
+							<pre class="brush:java">
+							&nbsp;
+/**
+ * 
+ * 开始向服务端订阅消息，重复调用无效
+ * @param 	topic		传递给服务器的扩展数据信息
+ * @throws  Exception 
+ * 
+ */
+public void subscribe(Object topic) throws Exception;
+
+/**
+ * 
+ * 开始向服务端订阅消息，重复调用无效 			
+ * 
+ */
+public void subscribe() throws Exception;	
+						
+							</pre>
+						</section>						
+						<section class="i2em">
+							Spouter的客户端处理数据的接口只有两个：<label class="blue">"doubtfulDataReceived"</label>和<label class="blue">"dataReceived"</label>。
+						</section>
+						<section class="i2em">
+							这两个接口的区别就是<label class="blue">"dataReceived"</label>只接收服务端通过<label class="blue">"dispatch"</label>接口发送出来的数据。
+							服务端通过<label class="blue">"dispathDoubtfulData"</label>
+							和 <label class="blue">"findDoubtfulData"</label>生成的数据都会被<label class="blue">"doubtfulDataReceived"</label>接收。
+							这样设计的目的是方便服务端给客户端做数据补偿。
+						</section>
+						<section class="i2em">
+							Spouter的服务端和客户端都是采用多线程异步处理机制。服务端发送完数据后不会等待客户端处理就会继续推送数据。
+							如果客户端还没处理完数据就退出，那么已经推送的数据就需要做补偿推送。可疑数据接口的设计初衷就是为了让服务端能做出即时的线上数据补偿操作。
+						</section>
+					</div>
+					
+					<div class="mode capter">
+						<p>工作模式</p>
+						<section class="i2em">
+							几乎所有的技术框架都是在特定需求下诞生的，Spouter也没能例外。Spouter面向的是大量拥有相似数据订阅需求的客户端集群。
+							作为推送端需要准确地知道客户端是谁，应该给客户端提供什么样的数据。所以在设计上将具有相似特性(hash id相同)的客户端都集中到同一个Spouter上。
+							作为客户端则需要知道哪个节点能为它提供服务，
+							而这点Spouter已经帮开发者做了。开发者只需要关注正常数据和可疑数据的处理即可。
+						</section>
+						<section class="i2em">
+							如果客户端集群数很少，或者就只有一个客户端集群，那么可以通过给客户端集群中每个节点配置不同的subscriber来达到最大化利用服务端资源的目的。
+						</section>
+					</div>		
+					<div>
+						<embed src="./img/spouter.svg" type="image/svg+xml"/>
+					</div>		
+					
+					<div class="tag capter">
+						<p>标签说明</p>
+					</div>		
+
+					<div style="padding-left: 2em;" >
+						<p>spouter</p>
+						<section class="i2em">
+							标签<label class="blue">"&lt;spouter/&gt"</label>用来申明数据推送服务。配置参数如下:
+							<div>
+								<div class="blue cell p15">appName：</div>
+								<div class="p85 cell">服务端应用的名，application标签的name属性。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">shards：</div>
+								<div class="cell p85">服务端切片总数。</div>
+							</div>
+							<div>
+								<div class="blue cell p15">coreSize：</div>
+								<div class="cell p85">服务端异步推送线程池核心线程数。默认3个</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxSize：</div>
+								<div class="cell p85">服务端异步推送线程池最大线程数。默认10个</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxQueueSize：</div>
+								<div class="cell p85">服务端异步推送线程池等待队列长度。默认5000</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxClientsPerUser：</div>
+								<div class="cell p85">每个用户允许同时建立的最大客户端连接数。默认32</div>
+							</div>
+						</section>
+					</div>		
+					<div style="padding-left: 2em;">
+						<p>subscriber</p>
+						<section class="i2em">
+							标签<label class="blue">"&lt;subscriber/&gt"</label>用来声明客户端订阅配置信息。配置参数如下:
+							<div>
+								<div class="blue cell p15">poolName：</div>
+								<div class="p85 cell">连接池的名字。表示该订阅声明是对应的哪个pool对象</div>
+							</div>
+							<div>
+								<div class="blue cell p15">subscriber：</div>
+								<div class="p85 cell">订阅帐号，默认使用的是认证帐号，该帐号被用作计算hash值来散列切片服务器</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxSize：</div>
+								<div class="p85 cell">客户端连接池最大连接数。默认10</div>
+							</div>
+							<div>
+								<div class="blue cell p15">coreSize：</div>
+								<div class="p85 cell">客户端连接池核心线程数。默认3</div>
+							</div>
+							<div>
+								<div class="blue cell p15">maxQueueSize：</div>
+								<div class="p85 cell">客户端异步处理等待队列长度。默认5000</div>
+							</div>
+						</section>
+					</div>
+
+					<div class="retry capter">
+						<p>故障恢复</p>
+						<section class="i2em">
+							Spouter内置的错误重试，只针对io发送过程中出现的异常，Spouter会从客户端集群中重新选择一个可用的通道推送数据。
+							如果客户端就一个通道，那么Spouter就会放弃本次推送。对于已经发送到io缓冲以后的异常，Spouter服务端是不会理会的。
+							这也是Spouter设计了可疑数据接口机制的原因。
+						</section>
+					</div>		
+					<div class="need2Know capter">
+						<p>开发须知</p>
+						<section style="text-indent: 2em; line-height: 24px;">
+							Rabbit Spouter是被设计来面向大量客户端集群的数据推送服务。相同的订阅人被会散列到同一台服务器上。
+							如果你有很多台服务器，客户端集群只有少数，甚至是只有一个客户端集群。那么使用默认的Spouter配置将会极大地浪费你的服务器资源。
+							你需要定制你的subscriber，客户端散列到不同的服务器上去。spouter的hash算法如下, 实现在类SpouterAdapter中。
+						</section>
+						<section>
+							<pre class="brush:java">
+&nbsp;
+//服务端hash散列计算
+//算出的hash值再对服务端切片总数取模就能得到客户端的散列的切片号。
+public static final long hash(String subscriber) throws RpcException{
+	if(null == subscriber || "".equals(subscriber.trim())){
+		throw new RpcException("subscirber id can't be empty!");
+	}
+	char[] chars = subscriber.toLowerCase().toCharArray();
+	long id = 0;
+	for(char c : chars){
+		id += Integer.valueOf(c);
+	}
+	return id;
+}							
+							</pre>
+						</section>
+						<section style="text-indent: 2em; line-height: 24px;">
+							
+						</section>
+					</div>
+				</div>
+			</div> 
+			<script type="text/javascript">
+				$(function(){
+					window.hidetimer = null;
+					$("li.center a.center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+						$(this).closest("li.center").find(".project-center").fadeIn(500);
+					}, function(){
+						var pro = $(this).closest("li.center").find(".project-center");
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 100);
+					});
+					$(".project-center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+					},function(){
+						var pro = $(this);
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 500);
+					})
+				})
+				
+			</script>			
+			<div class="footer">
+				<!-- <div style="margin: 0px 0px 10px 0px; font-family: 微软雅黑; z-index: 9999; position:relative; overflow:hidden;">
+					<div class="bdsharebuttonbox" style="left:50%;  margin-left:-100px; position:relative;"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{},"image":{"viewList":["qzone","tqq","weixin","bdhome","sqq"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tqq","weixin","bdhome","sqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+				</div> -->
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+	
+</html>

@@ -1,0 +1,94 @@
+
+h3{position:relative;letter-spacing:.07em;font-size:48px ;font-weight:normal;margin:0 auto}
+@media print{h3{-webkit-filter:contrast()/*to print shadows*/}}
+h3:before,h3:after{position:absolute;top:0;left:0;right:0}
+
+.ormh3{position:relative;letter-spacing:.07em;font-size:48px;font-weight:normal;margin:0 auto}
+@media print{.ormh3{-webkit-filter:contrast()/*to print shadows*/}}
+.ormh3:before,.ormh3:after{position:absolute;top:0;left:0;right:0}
+
+h4{position:relative;letter-spacing:5px;font-size:16px;font-weight:normal;margin:0 auto}
+@media print{h4{-webkit-filter:contrast()/*to print shadows*/}}
+h4:before,h4:after{position:absolute;top:0;left:0;right:0}
+
+.outlinedB{color:hsl(10,100%,40%);text-shadow:0 0 2px currentColor,
+0 -1px 1px hsl(40,100%,80%),
+-1px -1px 1px hsl(10,100%,40%),
+1px -1px 1px hsl(10,100%,40%),
+1px 0 1px hsl(10,100%,40%),
+0 -1px 1px hsl(10,100%,40%),
+0 1px 1px hsl(10,100%,20%),
+1px 1px 1px hsl(10,100%,40%),
+-1px 1px 1px hsl(10,100%,40%),
+
+-2px -2px 1px hsl(10,100%,20%),
+-1px -2px 1px hsl(10,100%,20%),
+0 -2px 1px hsl(10,100%,20%),
+1px -2px 1px hsl(10,100%,20%),
+2px -2px 1px hsl(10,100%,20%),
+2px -1px 1px hsl(10,100%,20%),
+2px 0 1px hsl(10,100%,20%),
+2px 1px 1px hsl(10,100%,20%),
+2px 2px 1px hsl(10,100%,20%),
+1px 2px 1px hsl(10,100%,20%),
+0 2px 3px hsl(10,100%,20%),
+-1px 2px 1px hsl(10,100%,20%),
+-2px 2px 1px hsl(10,100%,20%),
+-2px 1px 1px hsl(10,100%,20%),
+-2px 0 1px hsl(10,100%,20%),
+-2px -1px 1px hsl(10,100%,20%)
+}
+.outlinedB:before{content:'';top:-3px;color:transparent;text-shadow:0 1px 2px #ff6;opacity:.4}
+.outlinedB:after{content:'';top:.3em;color:transparent;text-shadow:0 0 6px rgba(0,0,0,.6),0 0 8px rgba(0,0,0,.8);transform:scaleY(.5);z-index:-1}
+
+.hsl{color:hsl(72,80%,25%);text-shadow:0 0 1px currentColor,
+/*highlight*/
+-1px -1px 1px hsl(72,80%,50%),
+0 -1px 1px hsl(72,80%,55%),
+1px -1px 1px hsl(72,80%,50%),
+/*light shadow*/
+1px 1px 1px hsl(72,80%,10%),
+0 1px 1px hsl(72,80%,10%),
+-1px 1px 1px hsl(72,80%,10%),
+/*outline*/
+-2px -2px 1px hsl(72,80%,15%),
+-1px -2px 1px hsl(72,80%,15%),
+0 -2px 1px hsl(72,80%,15%),
+1px -2px 1px hsl(72,80%,15%),
+2px -2px 1px hsl(72,80%,15%),
+2px -1px 1px hsl(72,80%,15%),
+2px 0 1px hsl(72,80%,15%),
+2px 1px 1px hsl(72,80%,15%),
+-2px 0 1px hsl(72,80%,15%),
+-2px -1px 1px hsl(72,80%,15%),
+-2px 1px 1px hsl(72,80%,15%),
+/*dark shadow*/
+2px 2px 2px hsl(72,80%,5%),
+1px 2px 2px hsl(72,80%,5%),
+0 2px 2px hsl(72,80%,5%),
+-1px 2px 2px hsl(72,80%,5%),
+-2px 2px 2px hsl(72,80%,5%)
+}
+
+
+
+.title-font{font-weight:bold;color:#000;text-shadow:0 0 1px currentColor,
+2px  0   1px #083058,  0   2px  1px #98c0e8,  2px  1px  1px #083058,  1px  2px  1px #98c0e8,  2px  2px  1px #487098,
+3px  1px 1px #083058,  1px 3px  1px #98c0e8,  3px  2px  1px #083058,  2px  3px  1px #98c0e8,  3px  3px  1px #487098,
+4px  2px 1px #083058,  2px 4px  1px #98c0e8,  4px  3px  1px #083058,  3px  4px  1px #98c0e8,  4px  4px  1px #487098,
+5px  3px 1px #083058,  3px 5px  1px #98c0e8,  5px  4px  1px #083058,  4px  5px  1px #98c0e8,  5px  5px  1px #487098,
+6px  4px 1px #083058,  4px 6px  1px #98c0e8,  6px  5px  1px #083058,  5px  6px  1px #98c0e8,  6px  6px  1px #487098,
+7px  5px 1px #083058,  5px 7px  1px #98c0e8,  7px  6px  1px #083058,  6px  7px  1px #98c0e8,  7px  7px  1px #487098,
+8px  6px 1px #083058,  6px 8px  1px #98c0e8,  8px  7px  1px #083058,  7px  8px  1px #98c0e8,  8px  8px  1px #487098,
+7px 6px 1px #666,      6px 8px 1px #666,      5px 8px 1px #666,       4px 7px 1px #666,       0 3px 1px #666,
+-1px 2px 1px #666,
+8px 8px 8px rgba(0,0,0,.7)}
+.orm:before,.orm:after{content:'O R M'}
+.orm:before{color:rgb(40,80,120);text-shadow:0 0 1px currentColor,-1px -1px 1px #003,0 -1px 1px #003,1px -1px 1px #003,1px 0 1px #003,1px 1px 1px #003,0 1px 1px #003,-1px 1px 1px #003,-1px 0 1px #003}
+.orm:after{color:rgba(40,80,120,.1);text-shadow:1px -1px 1px rgba(40,80,120,.8),-1px 1px 1px rgba(255,255,255,.8)}
+
+.rpc:before,.rpc:after{content:'R P C'}
+.rpc:before{color:rgb(40,80,120);text-shadow:0 0 1px currentColor,-1px -1px 1px #003,0 -1px 1px #003,1px -1px 1px #003,1px 0 1px #003,1px 1px 1px #003,0 1px 1px #003,-1px 1px 1px #003,-1px 0 1px #003}
+.rpc:after{color:rgba(40,80,120,.1);text-shadow:1px -1px 1px rgba(40,80,120,.8),-1px 1px 1px rgba(255,255,255,.8)}
+
+

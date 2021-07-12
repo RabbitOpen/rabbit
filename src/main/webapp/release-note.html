@@ -1,0 +1,368 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>Rabbit 面向对象的全自动化ORM框架 分布式RPC服务 Spouter分布式推送技术</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/bv.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushBash.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+		<link rel="stylesheet" type="text/css" href="./css/font.css">
+		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("ormx" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+				$(".xml a").css({
+					"text-decoration": "none"
+				})
+			})		
+		</script>
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.blue{
+				color: blue;
+			}
+			.release-note{
+				text-indent: 2em; 
+				line-height: 20px; 
+				font-family: 微软雅黑; 
+				background-color: #FEFDFD;
+				border-radius: 15px;
+				padding-left: 15px;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Release Note</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div>
+				<div class="left nav">
+					<ul>
+						<li id="ormx">ORM 框架</li>
+						<li id="rpcx">RPC&nbsp;&nbsp;&nbsp;框架</li>
+						<li id="spouter">Spouter</li>
+					</ul>
+				</div>
+				<div class="right containers">
+					<div class="ormx capter">
+						<div style="position: relative;">
+							<div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+								ORM 框架
+							</div>
+						</div>
+						<pre class="release-note">
+						
+=============================== V1.7.2 =========================================
+	
+	1、修复ddl功能在web项目中无法扫描到lib包路径的bug。
+	2、扩展SpringDaoAdapter对象。
+			新增带参数的	createNameMappedQuery
+						createNameMappedUpdate
+						createNameMappedDelete
+			三个方法。
+			
+			允许传递和SpringDaoAdapter泛型参数不一致的对象作为过滤条件，
+			只要字段的名字和类型匹配即可
+	3、优化DataSource连接池性能，显著提升连接池访问效率
+	
+=============================== V1.7.0 ========================================
+	
+	1、扩展SpringDaoAdapter对象，新增带参数的createQuery、createUpdate、createDelete方法。
+	
+=============================== V1.6.9.6 =======================================
+	
+	1、强化了addInnerJoinFilter方法，使之支持OneToMany类型的多端过滤
+	
+=============================== V1.6.9.5 =======================================
+	
+	1、替换了orm中所有的StringUtils.isEmpty方法，该方法是spring4中的方法。这样就能支持旧版的spring
+
+
+=============================== V1.6.9.4 =======================================
+	
+	1、优化内置别名机制，原有单此查询中关联的表不能超过26个。该版本取消此限制，理论上是任意多表都可以
+	2、新增fetch自己的异常提醒
+	3、修改DMLFilter showSql方法，将原来的回车符("\r")换成换行符("\n")，解决linux控制台下显示日志不完整的bug。
+
+=============================== V1.6.9.3 =======================================
+	
+	1、新增自增长/序列 类型主键字段插入数据库后将字段值set到主键字段的功能
+	2、新增对long型字段的映射支持  
+						 mysql		long ----> bigint
+						 sqlserver		long ----> bigint
+						 db2			long ----> bigint
+						 oracle		long ----> number(20, 0)
+						 
+						 Integer 统一映射成INT
+						 
+						 不支持short类型的映射
+	3、修复空事务方法抛异常的bug
+	4、优化update对象的过滤条件，当单表查询时就不使用子查询
+
+=============================== V1.6.9.2 =======================================
+	
+	1、修正DDL工具bug。增加db2、sqlserver、oracle对double、float数据类型的支持
+	
+=============================== V1.6.9.1 =======================================
+	
+	1、修正DDL工具bug。sqlserver2008没有double类型数据 
+	
+=============================== V1.6.9 ========================================
+	
+	1、修正showSql函数中无法显示正则表达式
+	
+=============================== V1.6.8.9 =======================================
+	
+	1、修正addFilter函数在事务环境下校验字段信息无法正确抛出异常的bug
+
+=============================== V1.6.8.8 =======================================
+	
+	1、新增monitor关闭时的interrupt操作，加速安全退出进程
+	2、Query对象新增addInnerJoinFilter接口，支持动态添加多对多的inner join 过滤条件
+
+=============================== V1.6.8.7 =======================================
+	
+	1、对@Entity标签新增ddlIgnore属性
+
+	2、ddlIgnore默认为true，当为false则表示该实体类不参与ddl操作，比如该实体是视图
+
+=============================== V1.6.8.6 =======================================
+	
+	1、强化Update对象的set方法、使之支持set空值
+								
+						</pre>
+					</div>
+					
+					<div class="rpcx capter">
+						<p>RPC 框架</p>
+						<pre class="release-note">
+						
+=============================== V3.0 ========================================
+	1、在3.0-rc版本的基础上调整了rabbit xsd文件定义，将原来比较晦涩的rabbit节点声明变的更通俗易懂
+	2、修改HardWorker读取数据的机制。
+			
+		旧机制：每次读取完ByteBuffer后直接清空，buffer。
+			      在极端网络环境下推送channel可能出现截断心跳包的风险。
+			      
+		新机制: 每次读取ByteBuffer后直接compact。
+		
+	3、优化服务端线程池机制，调整为：当等待队列中等待任务数超过等待队列长度的10%就新增线程（如果允许的话）来处理
+						
+=============================== V3.0-RC ========================================
+	1、新增了异常堆栈信息的透传功能，支持将服务端异常抛给客户端	
+	2、重构spouter推送部分逻辑、在rpc部分开放统一数据回调处理接口RabbitDataHandler，
+	        方便其它业务数据的扩展处理
+
+=============================== V2.1.2 =========================================
+	
+	1、将序列化工具ProtostuffIOUtil 换成 Kryo， ProtostuffIOUtil序列化数组时有bug。
+	        如果数组中有null值，顺序会被改变
+
+=============================== V2.1.1 =========================================
+	
+	1、修正服务端下线后，客户端重试连接失败未正常关闭selector和channel的bug
+	
+
+
+=============================== V2.1 ==========================================
+	
+	1、修复关闭spouter时intterrupt networkmonitor的bug。改为只interrupt sleep操作，不sleep zookeeper的写操作
+	2、修复spouter未能和rpc共享同一连接池的bug
+	3、修复rpc参数不能为空的bug
+
+=============================== V2.0 ==========================================
+
+	1、新增了对分布式推送模块spouter的支持
+					
+						</pre>
+					</div>
+					
+					<div class="spouter capter">
+						<p>Spouter</p>
+						<pre class="release-note">
+
+
+=============================== V3.0 ==========================================
+	
+	1、在2.0-rc版本的基础上调整了rabbit xsd文件定义，将原来比较晦涩的rabbit节点声明变的更通俗易懂
+	2、调整了spring初始化spouter、subscriber、spout-writer的顺序，
+				   依次为spouter ---> subscriber ---> spout-writer
+	3、修复备用spouter节点启动时没有加载spouter信息的bug。
+	
+=============================== V2.0-RC ========================================
+	
+	1、重构spouter推送部分逻辑、使用统一数据回调处理接口RabbitDataHandler进行rpc数据处理逻辑
+	2、新增spouter客户端模块，spout-writer
+	3、调整的subscriber标签
+				将poolName属性改名为pool
+				新增属性name
+				注解@Subscirber的方法名改为name，对应subscriber标签的name属性
+				
+		新增spoutWriter标签，用来申明spoutWriter的配置信息
+
+				
+=============================== V1.2.0 =========================================
+	
+	1、修复备用spouter节点启动时没有加载spouter信息的bug。	
+
+
+=============================== V1.1.6 =========================================
+	
+	1、新增数据通道建立成功的日志打印
+	2、修改rpc依赖版本为最新的2.1.1
+	3、新增Spouter接口，dispatch给特定用户数据
+
+=============================== V1.1.5 =========================================
+	
+	1、修改doubtful数据的发送方式，由原来的异步发送修改为同步发送
+
+=============================== V1.1.4 =========================================
+	
+	1、调整spouter init方法的时序。设置为所有spring bean都初始化完成以后
+	
+=============================== V1.1.3 =========================================
+	
+	1、新增discard数据接口
+	2、新增dispatchFailed事件
+
+=============================== V1.1.2 =========================================
+	
+	1、新增成功捕获切片事件
+	2、新增Spouter关闭事件
+	3、修改connect事件的topic参数，由Topic对象改成真实参数对象
+
+=============================== V1.1.1 =========================================
+	
+	1、新增获取切片数和切片号的api
+
+=============================== V1.1 ==========================================
+	
+	1、新增多Subscriber的支持
+
+=============================== V1.0 ==========================================
+
+	1、发布基于rabbit-rpc的分布式分片推送功能
+						</pre>
+					</div>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+				$(function(){
+					window.hidetimer = null;
+					$("li.center a.center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+						$(this).closest("li.center").find(".project-center").fadeIn(500);
+					}, function(){
+						var pro = $(this).closest("li.center").find(".project-center");
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 100);
+					});
+					$(".project-center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+					},function(){
+						var pro = $(this);
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 500);
+					})
+				})
+				
+			</script>	
+			<div class="footer">
+				<br/>
+				<br/>
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- <script type="text/javascript">
+			(function(){
+				var bp = document.createElement('script');
+			    var curProtocol = window.location.protocol.split(':')[0];
+			    if (curProtocol === 'https'){
+			   		bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+			  	}else{
+			  		bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+			  	}
+			    var s = document.getElementsByTagName("script")[0];
+			    s.parentNode.insertBefore(bp, s);
+			})();
+			
+		</script> -->
+	</body>
+	
+</html>

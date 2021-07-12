@@ -1,0 +1,395 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="Rabbit rpc orm spouter">
+		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+		<meta content="Rabbit ORM">
+		<meta content="Rabbit RPC">
+		<meta content="Rabbit Spouter 分布式即时推送技术">
+		<meta content="rpc orm spouter">
+		<title>我爱编程</title>
+		<script src="./js/jquery-1.9.1.min.js"></script>
+        <script src="./js/bv.js"></script>
+        <script src="./highcharts/highcharts.js"></script>
+        <script src="./highcharts/modules/exporting.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushSql.js"></script>
+        <script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+        <link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
+        <link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+        <link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+        <link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+        <link rel="stylesheet" type="text/css" href="./css/font.css">
+        <link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<script type="text/javascript">
+			$(function(){
+				$(".content li").each(function(){
+					$(this).click(function(){
+						if(!$(this).hasClass("selected")){
+							$(".content .selected").removeClass("selected");
+							$(this).addClass("selected");
+						}
+						if("datasourcetest" == $(this).attr("id")){
+							$(document).scrollTop(0);
+							return;
+						}
+						if($("." + $(this).attr("id")).length != 0){
+							$(document).scrollTop($("." + $(this).attr("id")).offset().top);
+						}
+					});
+				});
+				SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+				SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+				SyntaxHighlighter.config.bloggerMode = true; 
+				SyntaxHighlighter.config.stripBrs = true; 
+				SyntaxHighlighter.highlight();
+				$(".syntaxhighlighter").css("border", "1px solid #6CE26C");
+				$("img").css("border", "1px solid #6CE26C");
+				$("embed").css("border", "1px solid #6CE26C").css("margin", "10px 0px");
+				$(".xml a").css({
+					"text-decoration": "none"
+				})
+			})		
+		</script>
+		<style type="text/css">
+			.resource{
+				margin-right: -10px;
+			}
+			.blue{
+				color: blue;
+			}
+		</style>
+	</head>
+	<body style="margin: 0px; padding: 0px; background-color: FAFAFA;">
+		<div class="header">
+			<div class="logo"></div>
+			<div class="title" style="margin-left: -500px;">
+				<div class="welcome outlinedB" style="float: left"><h3>Write less do more</h3></div>
+				<div class="resource">
+					<ul>
+						<li class="item"><a href="./">首页</a></li>
+						<li class="item"><a href="http://www.rabbit-open.top/nexus/content/groups/public/rabbit/open/orm">源码下载</a></li>
+						<li class="item center" style="position: relative;">
+							<div><a class="center">代码模块&nbsp;<span>&#8595</span></a></div>
+							<div class="project-center">
+								<ul>
+									<li><a href="./orm2">Rabbit ORM</a></li>
+									<li><a href="http://www.rabbit-open.top/sonar/overview?id=1">ORM Sample</a></li>
+									<li><a href="./rpc">Rabbit RPC</a></li>
+									<li><a href="./spouter">Rabbit Spouter</a></li>
+									<li><a href="./spoutwriter">Spout Writer</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="item"><a href="./contact">联系我</a></li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div>
+				<div class="left nav" style="z-index: 9999; position: relative;">
+					<ul>
+						<li id="introduce">事务简介</li>
+						<li id="dtxClient">客户端接入</li>
+						<li id="dtxServer">服务端部署</li>
+						<li id="commit">提交流程</li>
+						<li id="rollback">回滚流程</li>
+						<li id="lock">带锁事务流程</li>
+						<li id="paxos">分布式选举</li>
+					</ul>
+				</div>
+				<div class="right containers">
+				    <div class="introduce capter">
+                        <div style="position: relative;">
+                            <div style="font-weight: bold; font-size: 16px; width:200px; margin: 0px 0px 10px 0px;" >
+                                                                                    事务简介
+                            </div>
+                        </div>
+                        <div style="text-indent: 2em; line-height: 24px;">
+                        	Rabbit ORM从v3.3.0以后新增了分布式事务的特性支持。该事务是一种基于undo log的事务。本质上是柔性事务。undo log是通过代理数据库请求，反向解析插入到roll_back_info表的。
+                        	所以在使用前需要先在目标库中建回滚表，如果是多数据源则每个数据源都需要建立回滚表。建表sql如下：
+                        	<pre class="brush:sql">
+							&nbsp;
+--- 建表sql(mysql)
+CREATE TABLE ROLL_BACK_INFO (
+	ID BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+	TX_BRANCH_ID BIGINT COMMENT '事务分支ID',
+	TX_GROUP_ID BIGINT COMMENT '事务组ID',
+	CREATED_DATE DATETIME COMMENT '创建时间',
+	ROLLBACK_ORDER BIGINT COMMENT '回滚顺序',
+	ROLLBACK_INFO LONGBLOB COMMENT '回滚信息',
+	MODIFIED_DATE DATETIME COMMENT '创建时间',
+	ROLLBACK_STATUS VARCHAR (16) COMMENT '回滚状态',
+	DATASOURCE_NAME VARCHAR (50) COMMENT '数据源名字',
+	APPLICATION_NAME VARCHAR (50) COMMENT '应用名字',
+	PRIMARY KEY (ID)
+);
+--- 建索引
+CREATE INDEX MODIFIED_DATE_INDEX ON ROLL_BACK_INFO (MODIFIED_DATE);
+
+							</pre>
+							然后是引入依赖包
+                        	<pre class="brush:xml">
+							&nbsp;
+&ltdependency>
+    &ltgroupId>rabbit.open&lt/groupId>
+    &ltartifactId>dtx-client&lt/artifactId>
+    &ltversion>3.3.0&lt/version>
+&lt/dependency>
+
+							</pre>
+                        </div>
+                        <div style="text-indent: 2em; line-height: 24px;">
+                        	分布式事务工作原理如下：
+                        	<embed src="./img/dtx.svg" type="image/svg+xml"/>
+                        </div>
+                    </div>
+                    <div class="dtxClient capter">
+	                    <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+	                   		 客户端接入
+	                    </div>	                    
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                    Rabbit ORM的分布式事务客户端采用代理增强的方式为用户完成事务协调通信。增强配置如下：先配置事务管理器, "applicationName"是应用的名字。
+	                    相同的接入方需要使用相同的名字，在事务回滚时，服务端会随机选择一个实例回滚，直至回滚成功为止。"host"参数为分布式事务的服务端信息，多个服务端之间以逗号分隔。
+	                    <pre class="brush:xml">
+&nbsp;
+&lt!--针对dubbo的分布式事务管理器-->
+&ltbean id="dubboTransactionManager" class="rabbit.open.dtx.client.rpc.support.DubboTransactionManager" destroy-method="destroy">
+    &ltconstructor-arg name="applicationName" value="user-app"/>
+    &ltconstructor-arg name="hosts" value="10.9.49.59:10010, 10.9.49.60:10010"/>
+&lt/bean>
+                    
+	                    </pre>
+	                    </div>
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                    然后配置数据源代理，同一个数据源的名字必须全局唯一。数据源的名字是构成数据锁的因子，如果相同的数据源配置了不同的名字，那么可能造成数据锁失败。
+	       代理数据源主要完成对sql语句的反向分析，实现回滚信息的生成。
+	                    <pre class="brush:xml">
+&nbsp;
+&lt!-- 数据源代理，通过sql解析实现回滚日志的插入  -->
+&ltbean id="txDataSource" class="rabbit.open.dtx.client.datasource.proxy.TxDataSource">
+    &lt!--配置JDBC数据源-->
+    &ltconstructor-arg name="dataSource" ref="rabbit"/>
+    &lt!--一个应用下如果有多个数据源，那么这个名字不能重复-->
+    &ltconstructor-arg name="dataSourceName" value="txDataSource"/>
+    &lt!--分布式事务管理器-->
+    &ltconstructor-arg name="transactionManger" ref="dubboTransactionManager"/>
+&lt/bean>
+	                    
+	                    </pre>
+	                    </div>	                    
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                    最后配置注解增强器，该类实现对注解的增强，完成事务的网络通信请求。
+	                    <pre class="brush:xml">
+&nbsp;
+&lt!-- dtx 注解增强器 -->
+&ltbean id="transactionEnhancer" class="rabbit.open.dtx.client.enhance.DistributedTransactionEnhancer">
+    &ltproperty name="transactionManger" ref="dubboTransactionManager"/>
+&lt/bean>	                    
+	                    </pre>
+	                    </div>
+	                    
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                    最后就是在需要使用分布式事务的地方使用增强注解"@DistributedTransaction"。
+	                    <pre class="brush:java">
+@DistributedTransaction()
+@Transactional
+public void addProduct(Product product) {
+    add(product);
+    // do something
+    add(product);
+}	                    
+	                    </pre>
+	                    </div>
+						<div style="text-indent: 2em; line-height: 24px;">
+	                    "@DistributedTransaction"注解有多个默认属性，分别如下：
+	                    	<pre class="brush:java">
+	                    	&nbsp;
+public @interface DistributedTransaction {
+
+    // 任务超时时间, 默认永不超时
+    long transactionTimeoutSeconds() default Long.MAX_VALUE;
+
+    // 回滚超时时间
+    long rollbackTimeoutSeconds() default 3L;
+
+    // 事务传播特性，默认没有事务就直接开启事务
+    Propagation propagation() default Propagation.REQUIRED;
+
+    // 默认不加锁
+    Isolation isolation() default Isolation.UNLOCK;
+
+    // 回滚策略
+    RollbackPolicy rollback() default RollbackPolicy.STRICT;
+}                    		
+							</pre>
+						</div>
+	                </div>	
+	                <div class="dtxServer capter">
+	                    <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+	                   		 服务端部署
+	                    </div>
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                    Dtx Server是分布式事务的协调端。负责对分布式事务进行协调，对事务上下文信息进行统一管理。既可以单机部署，也可以集群部署。
+	                    部署流程如下：
+	                    </div>
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                    先建一个web工程，或者springboot工程，然后引入server端的依赖包：
+		                    <pre class="brush:xml">
+		                    &nbsp;
+&ltdependency>
+    &ltgroupid>rabbit.open&lt/groupid>
+    &ltartifactid>dtx-server&lt/artifactid>
+    &ltversion>3.3.0&lt/version>
+&lt/dependency>
+		                    </pre>
+	                    </div>
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                    配置基于redis的事务管理器(也可以配置基于redis集群的事务管理器)：
+		                    <pre class="brush:xml">
+		                    &nbsp;
+&ltbean id="redisTransactionHandler" class="rabbit.open.dtx.server.handler.RedisTransactionHandler">
+    &ltproperty name="jedisClient" ref="pooledJedisClient"/>
+&lt/bean>
+
+&lt!--jedis client 配置-->
+&ltbean id="pooledJedisClient" class="rabbit.open.dtx.server.jedis.PooledJedisClient">
+    &ltconstructor-arg name="pool" ref="jedisPool"/>
+&lt/bean>
+
+&lt!--jedis pool 配置-->
+&ltbean id="jedisPool" class="redis.clients.jedis.JedisPool">
+    &ltconstructor-arg name="poolConfig">
+        &ltbean class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+            &ltproperty name="maxTotal" value="10"/>
+        &lt/bean>
+    &lt/constructor-arg>
+    &ltconstructor-arg name="host" value="localhost"/>
+    &ltconstructor-arg name="port" value="6379"/>
+&lt/bean>
+		                    </pre>
+	                    </div>
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                   然后配置网络事件处理器：
+		                    <pre class="brush:xml">
+		                    &nbsp;
+&ltbean id="dtxServerEventHandler" class="rabbit.open.dtx.common.nio.server.DtxServerEventHandler">
+    &ltproperty name="transactionHandler" ref="redisTransactionHandler"/>
+&lt/bean>
+		                    </pre>
+		                </div>    
+	                    <div style="text-indent: 2em; line-height: 24px;">
+	                   最后配置tcp server集群：
+		                    <pre class="brush:xml">
+		                    &nbsp;
+&ltbean id="server" class="rabbit.open.dtx.server.DtxServerClusterWrapper">
+    &ltconstructor-arg name="port" value="${dtx.server.port}"/>
+    &ltconstructor-arg name="handler" ref="dtxServerEventHandler"/>
+    &ltconstructor-arg name="candidateSize" value="3"/>
+    &ltconstructor-arg name="nodes">
+        &ltlist>
+            &ltbean class="rabbit.open.dtx.common.nio.client.Node">
+                &ltproperty name="host" value="${dtx.server1.ip}"/>
+                &ltproperty name="port" value="${dtx.server.port}"/>
+            &lt/bean>
+            &ltbean class="rabbit.open.dtx.common.nio.client.Node">
+                &ltproperty name="host" value="${dtx.server2.ip}"/>
+                &ltproperty name="port" value="${dtx.server.port}"/>
+            &lt/bean>
+            &ltbean class="rabbit.open.dtx.common.nio.client.Node">
+                &ltproperty name="host" value="${dtx.server3.ip}"/>
+                &ltproperty name="port" value="${dtx.server.port}"/>
+            &lt/bean>
+        &lt/list>
+    &lt/constructor-arg>
+&lt/bean>
+		                    </pre>
+		                </div>    
+	                </div>
+	                <div class="commit capter">
+                       <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+	                   		 提交流程
+	                   </div>    
+	                   <div style="text-indent: 2em; line-height: 24px;">
+	                   		dtx会在每个请求分支创建一次分支事务，事务的回滚信息会记录在应用的所使用的数据库中，对于正常提交的事务
+	                   		dtx服务协调端则不再关系这些回滚信息，交由应用本地自行清理，默认清理10分钟之前的信息。提交流程大致如下：
+	                   		<img alt="commit" src="./img/commit.png"/>
+	                   </div>                                      
+                    </div>  
+                    <div class="rollback capter">
+                       <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+	                   		 回滚流程
+	                   </div>  
+	                   <div style="text-indent: 2em; line-height: 24px;">
+	                   		事务回滚时会阻塞当前请求，dtx协调端会向应用分支发送回滚通知，应用则会根据记录在本地的回滚信息进行数据回滚。大致流程如下：
+	                   		<img alt="commit" src="./img/rollback.png"/>
+	                   </div>                                         
+                    </div> 
+                    <div class="lock capter">
+                       <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+	                   		 带锁事务流程
+	                   </div>  
+	                   <div style="text-indent: 2em; line-height: 24px;">
+	                   		dtx允许用户根据自己的业务场景选择分布式事务是否锁资源。加锁模式的成本会略大于无锁模式。其流程如下：
+	                   		<img alt="commit" src="./img/lock.png"/>
+	                   </div>                                         
+                    </div>  
+                    <div class="paxos capter">
+                       <div style="font-weight: bold; font-size: 16px; width:200px; margin: 20px 0px 10px 0px;" >
+	                   		 分布式选择
+	                   </div>
+	                   <div style="text-indent: 2em; line-height: 24px;">
+	                   		dtx的协调端可以以集群模式进行工作，每个节点对于客户端来说都是一样的。客户端采用轮询机制进行负载均衡。客户端能自动发现服务端节点，也会自动踢掉离线的节点。
+	                   		但是服务端节点本身仍会选举出一个leader来做一些特殊的业务，比如清理过期的事务上下文信息，并释放其占用的锁。
+	                   		dtx的选举算法是对paxos的java实现，其流程如下：
+	                   		<img alt="commit" src="./img/paxos.png"/>
+	                   </div>                                           
+                    </div>  
+                </div>
+			</div>
+			
+			<script type="text/javascript">
+				$(function(){
+					window.hidetimer = null;
+					$("li.center a.center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+						$(this).closest("li.center").find(".project-center").fadeIn(500);
+					}, function(){
+						var pro = $(this).closest("li.center").find(".project-center");
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 100);
+					});
+					$(".project-center").hover(function(){
+						if(null != window.hidetimer){
+							clearTimeout(window.hidetimer);
+						}
+					},function(){
+						var pro = $(this);
+						window.hidetimer = setTimeout(function(){
+							pro.fadeOut(500);
+						}, 500);
+					})
+				})
+			</script>	
+			<div class="footer">
+				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
+					<ul class="footer">
+						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+						<li>abbit team 709498191@qq.com </li>
+					</ul>
+				</div>
+				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+					蜀ICP备17028451号-1
+					</a>
+				</div>
+			</div>
+		</div>
+	</body>
+	
+</html>
