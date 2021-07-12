@@ -63,10 +63,17 @@
 				line-height: 30px;
 				float: left;
 			}
+			div.equation-result {
+				width: 230px;
+				height: 30px;
+				line-height: 30px;
+				float: left;
+			}
+
 			div.equation-content {
 				border-radius: 8px;
 				border: 2px solid #14B1D1;
-				height: 600px;
+				height: 300px;
 				width: 1070px;
 				margin: 25px 20px;
 				padding: 10px;
@@ -75,25 +82,8 @@
 				margin-left: -535px;
 			}
 
-			.history-header {
-				float: left;
-				width: 170px;
-				height: 30px;
-				line-height: 30px;
-				font-weight: 800;
-				border-bottom: 2px dotted #14B1D1;
-			}
-
-			.history-content {
-				float: left;
-				width: 170px;
-				height: 30px;
-				line-height: 30px;
-				border-bottom: 2px dotted #14B1D1;
-			}
-
 			.remind {
-				color: fuchsia;
+				border-color: fuchsia;
 			}
 
 		</style>
@@ -111,11 +101,8 @@
 		</div>
         <div class="menu-bar">
             <ul>
-                <li class="item start">
-                    <a class = "menu-item" href="./practise">
-                        返回练习 >>
-                    </a>
-                </li>
+                <li class="item"><a class = "menu-item" href="./practise">返回练习 >></a></li>
+                <li class="item"><a class = "menu-item" href="./history">历史答题 >></a></li>
             </ul>
         </div>
         <div class="equation-content">
@@ -139,23 +126,29 @@
 		</div>
 		<script type="text/javascript">
 			$(function(){
-				$.post("./practises", {}, function(data) {
-					$(".equation-content").append('<div class="history-header">总题数</div>');
-					$(".equation-content").append('<div class="history-header">总耗时(秒)</div>');
-					$(".equation-content").append('<div class="history-header">正确数</div>');
-					$(".equation-content").append('<div class="history-header">正确率</div>');
-					$(".equation-content").append('<div class="history-header">开始时间</div>');
-					$(".equation-content").append('<div class="history-header">结束时间</div>');
-					for (var i = 0; i < data.length; i++) {
-						$(".equation-content").append('<div class="history-content"><a href="./practiseDetail?id=' + data[i].id+ '">' + data[i].total + '</a></div>');
-						$(".equation-content").append('<div class="history-content">' + data[i].costTime + '</div>');
-						$(".equation-content").append('<div class="history-content remind">' + data[i].correct + '</div>');
-						$(".equation-content").append('<div class="history-content remind">' + new Number(data[i].correct/data[i].total*100).toFixed(2) + '%</div>');
-						$(".equation-content").append('<div class="history-content">' + data[i].begin + '</div>');
-						$(".equation-content").append('<div class="history-content">' + data[i].end + '</div>');
+				$.post("./load", {practiseId: getUrlParam("id")}, function(data){
+					if (data.length == 0) {
+						return;
 					}
-				});
+					for (var i = 0; i < data.length; i++) {
+						$(".equation-content").append('<div class="equation"><font color="fuchsia">' + (i + 1) +
+							'.</font> <a href = "#" style = "text-decoration:none" title="查看解题思路">'
+							+ data[i].text + '</a></div>');
+						$(".equation-content").append('<div class="equation-result">x = ' + data[i].finalResult + ', &nbsp; 答：' + data[i].committedResult + '</div>');
+					}
+					$(".equation-content").height(450);
+					$(".equation-result input").unbind("focus").bind("focus", function() {
+						$(this).removeClass("remind");
+					});
+				})
+
 			})
+
+			function getUrlParam(name) {
+            	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            	var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            	if (r != null) return unescape(r[2]); return null; //返回参数值
+        	}
 			
 		</script>
 

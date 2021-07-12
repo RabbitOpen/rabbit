@@ -24,6 +24,9 @@ public class PracticeController {
     @Autowired
     PractiseService practiseService;
 
+    @Autowired
+    EquationRecordService equationRecordService;
+
     ReentrantLock lock = new ReentrantLock();
 
     /**
@@ -39,6 +42,11 @@ public class PracticeController {
     @RequestMapping("/history")
     public String history() {
         return "history";
+    }
+
+    @RequestMapping("/practiseDetail")
+    public String practiseDetail() {
+        return "practise-detail";
     }
 
     @RequestMapping("/generate")
@@ -87,5 +95,12 @@ public class PracticeController {
         return practiseService.createQuery().desc("id")
                 .addFilter("commitStatus", Practise.CommitStatus.COMMITTED)
                 .page(0, 20).list();
+    }
+
+    @RequestMapping("/load")
+    @ResponseBody
+    public List<EquationRecord> load(@RequestParam("practiseId")Long practiseId) {
+        return equationRecordService.createQuery().addFilter("practiseId", practiseId)
+            .addFilter("result", EquationRecord.Result.FAILED).list();
     }
 }
