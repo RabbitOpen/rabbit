@@ -75,15 +75,16 @@ public class PractiseService extends BasicService<Practise> {
 
     /**
      * 简单加减法生成器
+     *
      * @return
      */
     private Supplier<Equation> simpleAddOrMinusEquationSupplier() {
         return () -> {
-            Equation[] equations = new Equation[]{
-                new Addition(),
-                new Minus(),
-                new Minus(new Minus(), new Addition()),
-                new Addition(new Minus(), new Addition())
+            Equation[] equations = new Equation[] {
+                    new Addition(),
+                    new Minus(),
+                    new Minus(new Minus(), new Addition()),
+                    new Addition(new Minus(), new Addition())
             };
             return equations[new Random().nextInt(equations.length)];
         };
@@ -91,6 +92,7 @@ public class PractiseService extends BasicService<Practise> {
 
     /**
      * 简单加乘除法生成器
+     *
      * @return
      */
     private Supplier<Equation> simpleMultiAndDivEquationSupplier() {
@@ -98,8 +100,8 @@ public class PractiseService extends BasicService<Practise> {
             Equation[] equations = new Equation[]{
                     new Multi(),
                     new Division(),
-                    new Multi(new Minus(), new Addition()),
-                    new Division(new Minus(), new Addition())
+//                    new Multi(new Minus(), new Addition()),
+//                    new Division(new Minus(), new Addition())
             };
             return equations[new Random().nextInt(equations.length)];
         };
@@ -107,7 +109,7 @@ public class PractiseService extends BasicService<Practise> {
 
     private List<EquationRecord> generateEquation(Long batchId, int count, Supplier<Equation> generator) {
         List<EquationRecord> equations = new ArrayList<>();
-        for (int i = 0; i< count; i++) {
+        for (int i = 0; i < count; i++) {
             Equation equation = generator.get();
             equation.randomMask();
             String text = equation.writeAsText();
