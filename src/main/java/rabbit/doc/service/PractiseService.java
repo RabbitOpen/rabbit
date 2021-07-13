@@ -35,8 +35,8 @@ public class PractiseService extends BasicService<Practise> {
         practise.setBegin(new Date());
         add(practise);
         List<EquationRecord> equations = new ArrayList<>();
-        equations.addAll(generateEquation(practise.getId(), 1, simpleAddOrMinusEquationSupplier()));
-        equations.addAll(generateEquation(practise.getId(), 1, simpleMultiAndDivEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), 15, simpleAddOrMinusEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), 15, simpleMultiAndDivEquationSupplier()));
         practise.setTotal((long) equations.size());
         updateByID(practise);
         return equations;
