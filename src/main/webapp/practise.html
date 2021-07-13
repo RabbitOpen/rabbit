@@ -1,20 +1,20 @@
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta content="Rabbit rpc orm spouter">
-		<meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
-		<meta content="Rabbit ORM">
-		<meta content="Rabbit RPC">
-		<meta content="Rabbit Spouter">
-		<meta content="rpc orm spouter">
-		<title>我爱编程</title>
-		<script src="./js/jquery-1.9.1.min.js"></script>
-		<script src="./js/bv.js"></script>
-		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
-		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
-		<link rel="stylesheet" type="text/css" href="./css/font.css">
-		<link rel="stylesheet" type="text/css" href="./css/orm.css">
-		<style type="text/css">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta content="Rabbit rpc orm spouter">
+    <meta content="Rabbit 开源技术 分布式rpc服务 即时推送 全自动orm架构">
+    <meta content="Rabbit ORM">
+    <meta content="Rabbit RPC">
+    <meta content="Rabbit Spouter">
+    <meta content="rpc orm spouter">
+    <title>我爱编程</title>
+    <script src="./js/jquery-1.9.1.min.js"></script>
+    <script src="./js/bv.js"></script>
+    <link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="./css/rabbit.css">
+    <link rel="stylesheet" type="text/css" href="./css/font.css">
+    <link rel="stylesheet" type="text/css" href="./css/orm.css">
+    <style type="text/css">
 			menu-bar {
                 float: right; color:#F8F8F8;
                 line-height: 24px; font-size: 14px;
@@ -25,12 +25,12 @@
             .menu-bar ul {
                 list-style: none;
                 height: 24px;
-                margin: 10 10 10 30;
+                margin: 10 10 10 65;
             }
             .menu-bar ul li{
                 float: left;
                 height: 24px;
-                 margin: 0 0 0 20;
+                margin: 0 0 0 20;
             }
             .menu-bar ul li a {
                 float: left;
@@ -58,13 +58,13 @@
 			}
 
 			div.equation {
-				width: 280px;
+				width: 270px;
 				height: 30px;
 				line-height: 30px;
 				float: left;
 			}
 			div.equation-result {
-				width: 150px;
+				width: 140px;
 				height: 30px;
 				line-height: 30px;
 				float: left;
@@ -85,63 +85,65 @@
 				border-radius: 8px;
 				border: 2px solid #14B1D1;
 				height: 300px;
-				width: 1070px;
+				width: 1000px;
 				margin: 25px 20px;
 				padding: 10px;
 				left: 50%;
 				position: relative;
-				margin-left: -535px;
+				margin-left: -500px;
 			}
 
 			.remind {
 				border-color: fuchsia;
 			}
 
-		</style>
-	</head>
-	<body style="margin: 0px; padding: 0px; background-color: FAFAFA; overflow-y: scroll;">
-		<div class="header">
-			<div class="logo"></div>
-			<div class="title" style="margin-left: -500px;">
-				<div class="welcome outlinedB" style="float: left; padding-left: 200px;">
-					<h3>加油熊宝！</h3>
-				</div>
 
-			</div>
+    </style>
+</head>
+<body style="margin: 0px; padding: 0px; background-color: FAFAFA; overflow-y: scroll;">
+<div class="header">
+    <div class="logo"></div>
+    <div class="title" style="margin-left: -500px;">
+        <div class="welcome outlinedB" style="float: left; padding-left: 200px;">
+            <h3>加油熊宝！</h3>
+        </div>
 
-		</div>
-        <div class="menu-bar">
-            <ul>
-                <li class="item start">
-                    <a class = "menu-item generate">
-                        开始做题 >>
-                    </a>
-                </li>
-                <li class="item"><a class = "menu-item commit">做完交卷 >></a></li>
-                <li class="item"><a class = "menu-item" href="./history">历史答题 >></a></li>
+    </div>
+
+</div>
+<div class="menu-bar">
+    <ul>
+        <li class="item start">
+            <a class="menu-item generate">
+                开始做题 >>
+            </a>
+        </li>
+        <li class="item"><a class="menu-item commit">做完交卷 >></a></li>
+        <li class="item"><a class="menu-item" href="./history">历史答题 >></a></li>
+    </ul>
+</div>
+<input id="practiseId" style="display:none"></input>
+<div class="equation-content">
+</div>
+<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+
+<div>
+    <div class="footer">
+        <div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;">
+            <ul class="footer">
+                <li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
+                <li>abbit team 709498191@qq.com</li>
             </ul>
         </div>
-		<input id="practiseId" style="display:none"></input>
-        <div class="equation-content">
+        <div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
+            <a href="https://beian.miit.gov.cn"
+               style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
+                蜀ICP备17028451号-1
+            </a>
         </div>
-		<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
-
-		<div>
-			<div class="footer">
-				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
-					<ul class="footer">
-						<li style="width:18px; font-size:20px; line-height:22px; font-weight: bold;">&reg</li>
-						<li>abbit team 709498191@qq.com </li>
-					</ul>
-				</div>
-				<div style="margin: 30px 0 50px 0; font-family: 微软雅黑; z-index: 9999;">
-					<a href="https://beian.miit.gov.cn" style="text-decoration: none; color:#14B1D1; cursor: pointer !important;">
-					蜀ICP备17028451号-1
-					</a>
-				</div>
-			</div>
-		</div>
-		<script type="text/javascript">
+    </div>
+</div>
+<script type="text/javascript">
 			$(function(){
 				$("a.generate").click(function() {
 					$.post("./generate", {}, function(data) {
@@ -154,7 +156,7 @@
 						for (var i = 0; i < data.length; i++) {
 							$(".equation-content").append('<div class="equation"><font color="fuchsia">' + (i + 1) + ".</font> "+ data[i].text + '</div>');
 							$(".equation-content").append('<div class="equation-result">x&nbsp;=&nbsp;' +
-								'<input equation-id="' + data[i].id + '" type="text" style="width:120px" placeholder="--请输入正确答案--"/></div>');
+								'<input equation-id="' + data[i].id + '" type="text" style="width:110px" placeholder="---请输入答案---"/></div>');
 							$(".equation-content").append('<div class="real-result">&nbsp;<label>' + data[i].finalResult + '</label></div>');
 						}
 						$(".equation-content").height(450);
@@ -202,8 +204,9 @@
 				});
 			})
 			
-		</script>
 
-	</body>
+</script>
+
+</body>
 
 </html>

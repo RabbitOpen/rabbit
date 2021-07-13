@@ -103,4 +103,17 @@ public class PracticeController {
         return equationRecordService.createQuery().addFilter("practiseId", practiseId)
             .addFilter("result", EquationRecord.Result.FAILED).list();
     }
+
+    @RequestMapping("/details")
+    @ResponseBody
+    public List<String[]> details(@RequestParam("equationId")Long equationId) {
+        EquationRecord record = equationRecordService.getByID(equationId);
+        String deriveText = record.getDeriveText();
+        List<String[]> list = new ArrayList<>();
+        for (String line : deriveText.split(",")) {
+            String[] split = line.split("=");
+            list.add(new String[]{split[0], " = ", split[1]});
+        }
+        return list;
+    }
 }

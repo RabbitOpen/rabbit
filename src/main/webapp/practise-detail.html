@@ -8,12 +8,20 @@
 		<meta content="Rabbit Spouter">
 		<meta content="rpc orm spouter">
 		<title>我爱编程</title>
-		<script src="./js/jquery-1.9.1.min.js"></script>
+		<script src="./js/jquery.js"></script>
+		<script src="./js/jquery.kernel.3.0.js"></script>
 		<script src="./js/bv.js"></script>
 		<link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon" />
 		<link rel="stylesheet" type="text/css" href="./css/rabbit.css">
 		<link rel="stylesheet" type="text/css" href="./css/font.css">
 		<link rel="stylesheet" type="text/css" href="./css/orm.css">
+		<link rel="stylesheet" type="text/css" href="./css/component.3.0.css">
+
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJava.js"></script>
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCore.css" />
+		<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shThemeDefault.css" />
+
 		<style type="text/css">
 			menu-bar {
                 float: right; color:#F8F8F8;
@@ -25,7 +33,7 @@
             .menu-bar ul {
                 list-style: none;
                 height: 24px;
-                margin: 10 10 10 30;
+                margin: 10 10 10 65;
             }
             .menu-bar ul li{
                 float: left;
@@ -58,7 +66,7 @@
 			}
 
 			div.equation {
-				width: 280px;
+				width: 270px;
 				height: 30px;
 				line-height: 30px;
 				float: left;
@@ -74,12 +82,12 @@
 				border-radius: 8px;
 				border: 2px solid #14B1D1;
 				height: 300px;
-				width: 1070px;
+				width: 1000px;
 				margin: 25px 20px;
 				padding: 10px;
 				left: 50%;
 				position: relative;
-				margin-left: -535px;
+				margin-left: -500px;
 			}
 
 			.remind {
@@ -126,13 +134,16 @@
 		</div>
 		<script type="text/javascript">
 			$(function(){
+
+
+
 				$.post("./load", {practiseId: getUrlParam("id")}, function(data){
 					if (data.length == 0) {
 						return;
 					}
 					for (var i = 0; i < data.length; i++) {
 						$(".equation-content").append('<div class="equation"><font color="fuchsia">' + (i + 1) +
-							'.</font> <a href = "#" style = "text-decoration:none" title="查看解题思路">'
+							'.</font> <a equationId = "' + data[i].id + '" style = "text-decoration:none; cursor:pointer; color:blue" title="查看解题思路">'
 							+ data[i].text + '</a></div>');
 						$(".equation-content").append('<div class="equation-result">x = ' + data[i].finalResult + ', &nbsp; 答：' + data[i].committedResult + '</div>');
 					}
@@ -140,8 +151,28 @@
 					$(".equation-result input").unbind("focus").bind("focus", function() {
 						$(this).removeClass("remind");
 					});
-				})
 
+					$(".equation a").click(function() {
+						$.post("./details", {"equationId" : $(this).attr("equationId")}, function(data){
+							showDetail();
+							$("#detailContainer").empty().css("background-color", "white");
+
+							var text = '';
+							for (var i = 0; i < data.length; i++) {
+								text += '\n' + data[i][0] + data[i][1] + data[i][2];
+							}
+							$("#detailContainer").append('<pre class="brush:java">'
+								+ text + '</pre>');
+
+						 	SyntaxHighlighter.defaults['toolbar'] = false;  //去掉右上角问号图标
+							SyntaxHighlighter.config.tagName = 'pre';       //可以更改解析的默认Tag。
+							SyntaxHighlighter.config.bloggerMode = true;
+							SyntaxHighlighter.config.stripBrs = true;
+							SyntaxHighlighter.highlight();
+
+						});
+					});
+				})
 			})
 
 			function getUrlParam(name) {
@@ -149,9 +180,40 @@
             	var r = window.location.search.substr(1).match(reg);  //匹配目标参数
             	if (r != null) return unescape(r[2]); return null; //返回参数值
         	}
+
+        	function showDetail() {
+        		var box = $("#detailContainer").xqbBox({
+					title : '解题思路',
+					iconCls : 'methods',
+					width : 500,
+					model : true,				//模态弹出框
+					height : 300,
+					closeBtn : {				//点击close按钮关闭窗口就会触发该事件
+						afterClose : function(box) {
+							box.hide();
+						}
+					},
+					buttons : {					//给xqbBox弹出框配置button 按钮
+						items : [
+							{text : '确认', width : 60, click : function(){
+								box.hide();
+							}},
+							{text : '取消', width : 60, click : function(){
+								box.hide();
+							}}
+						],
+
+						//button摆放在右边,可选参数有'right'、'left'、'center'默认参数是center，非法参数会被强制转换成center
+
+						buttonAlign : 'right'
+					}
+				});
+				box.showCenter();
+        	}
 			
 		</script>
-
+		<div id="detailContainer" style="display:none; padding : 10px;">
+		</div>
 	</body>
 
 </html>

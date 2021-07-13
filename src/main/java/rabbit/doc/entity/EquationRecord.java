@@ -15,7 +15,7 @@ public class EquationRecord {
     @Column("practise_id")
     private Long practiseId;
 
-    @Column("equation_text")
+    @Column(value = "equation_text", length = 50)
     private String text;
 
     /**
@@ -32,6 +32,9 @@ public class EquationRecord {
      */
     @Column("result")
     private Result result;
+
+    @Column(value = "derive_text", length = 300)
+    private String deriveText;
 
     public enum Result {
         SUCCESS,
@@ -84,5 +87,13 @@ public class EquationRecord {
 
     public void setCommittedResult(String committedResult) {
         this.committedResult = committedResult;
+    }
+
+    public String getDeriveText() {
+        return deriveText;
+    }
+
+    public void setDeriveText(String deriveText) {
+        this.deriveText = deriveText;
     }
 }

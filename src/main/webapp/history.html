@@ -25,7 +25,7 @@
             .menu-bar ul {
                 list-style: none;
                 height: 24px;
-                margin: 10 10 10 30;
+                margin: 10 10 10 65;
             }
             .menu-bar ul li{
                 float: left;
@@ -67,17 +67,17 @@
 				border-radius: 8px;
 				border: 2px solid #14B1D1;
 				height: 600px;
-				width: 1070px;
+				width: 1000px;
 				margin: 25px 20px;
 				padding: 10px;
 				left: 50%;
 				position: relative;
-				margin-left: -535px;
+				margin-left: -500px;
 			}
 
 			.history-header {
 				float: left;
-				width: 170px;
+				width: 130px;
 				height: 30px;
 				line-height: 30px;
 				font-weight: 800;
@@ -86,7 +86,7 @@
 
 			.history-content {
 				float: left;
-				width: 170px;
+				width: 130px;
 				height: 30px;
 				line-height: 30px;
 				border-bottom: 2px dotted #14B1D1;
@@ -144,15 +144,15 @@
 					$(".equation-content").append('<div class="history-header">总耗时(秒)</div>');
 					$(".equation-content").append('<div class="history-header">正确数</div>');
 					$(".equation-content").append('<div class="history-header">正确率</div>');
-					$(".equation-content").append('<div class="history-header">开始时间</div>');
-					$(".equation-content").append('<div class="history-header">结束时间</div>');
+					$(".equation-content").append('<div class="history-header" style="width:200px">开始时间</div>');
+					$(".equation-content").append('<div class="history-header" style="width:200px">结束时间</div>');
 					for (var i = 0; i < data.length; i++) {
 						$(".equation-content").append('<div class="history-content"><a href="./practiseDetail?id=' + data[i].id+ '">' + data[i].total + '</a></div>');
 						$(".equation-content").append('<div class="history-content">' + data[i].costTime + '</div>');
 						$(".equation-content").append('<div class="history-content remind">' + data[i].correct + '</div>');
 						$(".equation-content").append('<div class="history-content remind">' + new Number(data[i].correct/data[i].total*100).toFixed(2) + '%</div>');
-						$(".equation-content").append('<div class="history-content">' + data[i].begin + '</div>');
-						$(".equation-content").append('<div class="history-content">' + data[i].end + '</div>');
+						$(".equation-content").append('<div class="history-content" style="width:200px">' + data[i].begin + '</div>');
+						$(".equation-content").append('<div class="history-content" style="width:200px">' + data[i].end + '</div>');
 					}
 				});
 			})

@@ -35,8 +35,8 @@ public class PractiseService extends BasicService<Practise> {
         practise.setBegin(new Date());
         add(practise);
         List<EquationRecord> equations = new ArrayList<>();
-        equations.addAll(generateEquation(practise.getId(), 15, simpleAddOrMinusEquationSupplier()));
-        equations.addAll(generateEquation(practise.getId(), 15, simpleMultiAndDivEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), 1, simpleAddOrMinusEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), 1, simpleMultiAndDivEquationSupplier()));
         practise.setTotal((long) equations.size());
         updateByID(practise);
         return equations;
@@ -108,13 +108,16 @@ public class PractiseService extends BasicService<Practise> {
     private List<EquationRecord> generateEquation(Long batchId, int count, Supplier<Equation> generator) {
         List<EquationRecord> equations = new ArrayList<>();
         for (int i = 0; i< count; i++) {
-            Equation addition = generator.get();
-            addition.randomMask();
-            String text = addition.writeAsText();
+            Equation equation = generator.get();
+            equation.randomMask();
+            String text = equation.writeAsText();
             EquationRecord record = new EquationRecord();
             record.setPractiseId(batchId);
             record.setText(text);
-            record.setFinalResult(addition.getMaskedValue());
+            record.setFinalResult(equation.getMaskedValue());
+            List<String> deriveTextList = equation.derive().getDeriveEquationTextList();
+            deriveTextList.add(0, text);
+            record.setDeriveText(String.join(",", deriveTextList));
             equationRecordService.add(record);
             equations.add(record);
         }
