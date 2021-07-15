@@ -38,6 +38,9 @@ public class Practise {
     @Column("commit_status")
     private CommitStatus commitStatus = CommitStatus.INIT;
 
+    @Column("user_name")
+    private String username;
+
     public enum CommitStatus {
         INIT,
         COMMITTED
@@ -105,5 +108,13 @@ public class Practise {
 
     public void setCommitStatus(CommitStatus commitStatus) {
         this.commitStatus = commitStatus;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

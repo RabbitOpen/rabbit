@@ -8,12 +8,12 @@
     <meta content="Rabbit Spouter">
     <meta content="rpc orm spouter">
     <title>我爱编程</title>
-    <script src="./js/jquery-1.9.1.min.js"></script>
-    <script src="./js/bv.js"></script>
-    <link rel="shortcut icon" href="./img/rabbit.jpg" type="image/x-icon"/>
-    <link rel="stylesheet" type="text/css" href="./css/rabbit.css">
-    <link rel="stylesheet" type="text/css" href="./css/font.css">
-    <link rel="stylesheet" type="text/css" href="./css/orm.css">
+    <script src="./../js/jquery-1.9.1.min.js"></script>
+    <script src="./../js/bv.js"></script>
+    <link rel="shortcut icon" href="./../img/rabbit.jpg" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="./../css/rabbit.css">
+    <link rel="stylesheet" type="text/css" href="./../css/font.css">
+    <link rel="stylesheet" type="text/css" href="./../css/orm.css">
     <style type="text/css">
 			menu-bar {
                 float: right; color:#F8F8F8;
@@ -105,7 +105,7 @@
     <div class="logo"></div>
     <div class="title" style="margin-left: -500px;">
         <div class="welcome outlinedB" style="float: left; padding-left: 200px;">
-            <h3>加油熊宝！</h3>
+            <h3>小熊习题</h3>
         </div>
 
     </div>
@@ -125,7 +125,7 @@
 <input id="practiseId" style="display:none"></input>
 <div class="equation-content">
 </div>
-<image src='./img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+<image src='./../img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
 
 <div>
     <div class="footer">
@@ -163,6 +163,23 @@
 						$(".equation-result input").unbind("focus").bind("focus", function() {
 							$(this).removeClass("remind");
 						});
+
+                        // 控制只能输入字符
+						$(".equation-content input").each(function() {
+                            $(this).keyup(function(){
+                                if (/[^\d]/.test($(this).val())) {
+                                    var temp = $(this).val().replace(/[^\d]/g,'');
+                                    $(this).val(temp);
+                                }
+                            });
+                            $(this).blur(function(){
+                                if (/[^\d]/.test($(this).val())) {
+                                    var temp = $(this).val().replace(/[^\d]/g,'');
+                                    $(this).val(temp);
+                                }
+                            });
+						});
+
 					});
 				});
 

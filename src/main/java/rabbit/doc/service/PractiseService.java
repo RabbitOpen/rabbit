@@ -1,11 +1,11 @@
 package rabbit.doc.service;
 
-import com.sun.org.apache.xpath.internal.operations.Div;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rabbit.doc.RequestUtil;
 import rabbit.doc.dao.BasicService;
 import rabbit.doc.entity.EquationRecord;
 import rabbit.doc.entity.Practise;
@@ -33,10 +33,11 @@ public class PractiseService extends BasicService<Practise> {
     public List<EquationRecord> generatePractise() {
         Practise practise = new Practise();
         practise.setBegin(new Date());
+        practise.setUsername(RequestUtil.getLoginUser());
         add(practise);
         List<EquationRecord> equations = new ArrayList<>();
-        equations.addAll(generateEquation(practise.getId(), 15, simpleAddOrMinusEquationSupplier()));
-        equations.addAll(generateEquation(practise.getId(), 15, simpleMultiAndDivEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), 1, simpleAddOrMinusEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), 1, simpleMultiAndDivEquationSupplier()));
         practise.setTotal((long) equations.size());
         updateByID(practise);
         return equations;

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Controller
+@RequestMapping("/practise")
 public class PracticeController {
 
     Logger logger = LoggerFactory.getLogger(getClass());
@@ -34,7 +35,7 @@ public class PracticeController {
      *
      * @return
      */
-    @RequestMapping("/practise")
+    @RequestMapping("/index")
     public String practise() {
         return "practise";
     }
@@ -55,7 +56,9 @@ public class PracticeController {
         // 简单防重一下
         if (lock.tryLock()) {
             try {
-                Practise practise = practiseService.createQuery().addFilter("commitStatus", Practise.CommitStatus.INIT).unique();
+                Practise practise = practiseService.createQuery().addFilter("commitStatus", Practise.CommitStatus.INIT)
+                        .addFilter("username", RequestUtil.getLoginUser())
+                        .unique();
                 if (null != practise) {
                     // 返回当前题目
                     return practiseService.getRecordsByPractiseNo(practise.getId());

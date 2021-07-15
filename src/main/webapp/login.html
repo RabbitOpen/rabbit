@@ -8,12 +8,13 @@
 		<meta content="Rabbit Spouter">
 		<meta content="rpc orm spouter">
 		<title>我爱编程</title>
-		<script src="./../js/jquery-1.9.1.min.js"></script>
-		<script src="./../js/bv.js"></script>
+		<script src="./../js/jquery.js"></script>
 		<link rel="shortcut icon" href="./../img/rabbit.jpg" type="image/x-icon" />
 		<link rel="stylesheet" type="text/css" href="./../css/rabbit.css">
 		<link rel="stylesheet" type="text/css" href="./../css/font.css">
 		<link rel="stylesheet" type="text/css" href="./../css/orm.css">
+		<link rel="stylesheet" type="text/css" href="./../css/component.3.0.css">
+
 		<style type="text/css">
 			menu-bar {
                 float: right; color:#F8F8F8;
@@ -58,15 +59,22 @@
 			}
 
 			div.equation {
-				width: 280px;
+				width: 270px;
 				height: 30px;
 				line-height: 30px;
 				float: left;
 			}
+			div.equation-result {
+				width: 230px;
+				height: 30px;
+				line-height: 30px;
+				float: left;
+			}
+
 			div.equation-content {
 				border-radius: 8px;
 				border: 2px solid #14B1D1;
-				height: 600px;
+				height: 300px;
 				width: 1000px;
 				margin: 25px 20px;
 				padding: 10px;
@@ -75,25 +83,8 @@
 				margin-left: -500px;
 			}
 
-			.history-header {
-				float: left;
-				width: 130px;
-				height: 30px;
-				line-height: 30px;
-				font-weight: 800;
-				border-bottom: 2px dotted #14B1D1;
-			}
-
-			.history-content {
-				float: left;
-				width: 130px;
-				height: 30px;
-				line-height: 30px;
-				border-bottom: 2px dotted #14B1D1;
-			}
-
 			.remind {
-				color: fuchsia;
+				border-color: fuchsia;
 			}
 
 		</style>
@@ -109,19 +100,20 @@
 			</div>
 
 		</div>
-        <div class="menu-bar">
-            <ul>
-                <li class="item start">
-                    <a class = "menu-item" href="./index">
-                        返回练习 >>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="equation-content">
-        </div>
-		<image src='./../img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
 
+
+		<image src='./../img/logo-2.png' style='position:absolute; left: -200px; top:150px;'/>
+		<div id="detailContainer" style="padding : 10px; width: 300px; height: 300px; position: relative; left:50%; margin-left:-150px;">
+			<div style="width: 300px; height: 100px; line-height:100px; position: relative;">
+				<div style="float:left; text-align:right; height: 100px; width:80px; line-height:100px">用户名：</div>
+				<div style="float:left; height: 100px;"><input id="username" style="position: relative; top:50%; margin-top:-10px"/></div>
+			</div>
+			<div style="width: 300px; position: relative;">
+				<div style="float:left; text-align:right; width:80px;">密码：</div>
+				<div style="float:left;"><input type="password" id="password" /></div>
+			</div>
+			<input type="button" value=" 登录 " id = "login" style="position: absolute; bottom:100px; right:60px; cursor: pointer"/></div>
+		</div>
 		<div>
 			<div class="footer">
 				<div style="font-size: 16px; color:#14B1D1; font-family: 微软雅黑; text-align: center; position: relative;" >
@@ -138,25 +130,29 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-			$(function(){
-				$.post("./practises", {}, function(data) {
-					$(".equation-content").append('<div class="history-header">总题数</div>');
-					$(".equation-content").append('<div class="history-header">总耗时(秒)</div>');
-					$(".equation-content").append('<div class="history-header">正确数</div>');
-					$(".equation-content").append('<div class="history-header">正确率</div>');
-					$(".equation-content").append('<div class="history-header" style="width:200px">开始时间</div>');
-					$(".equation-content").append('<div class="history-header" style="width:200px">结束时间</div>');
-					for (var i = 0; i < data.length; i++) {
-						$(".equation-content").append('<div class="history-content"><a href="./practiseDetail?id=' + data[i].id+ '">' + data[i].total + '</a></div>');
-						$(".equation-content").append('<div class="history-content">' + data[i].costTime + '</div>');
-						$(".equation-content").append('<div class="history-content remind">' + data[i].correct + '</div>');
-						$(".equation-content").append('<div class="history-content remind">' + new Number(data[i].correct/data[i].total*100).toFixed(2) + '%</div>');
-						$(".equation-content").append('<div class="history-content" style="width:200px">' + data[i].begin + '</div>');
-						$(".equation-content").append('<div class="history-content" style="width:200px">' + data[i].end + '</div>');
+
+			$(function() {
+				$("#login").click(function() {
+					if ($.trim($("#username").val()) == "") {
+						alert("请输入用户名信息");
+						return;
 					}
+					if ($.trim($("#password").val()) == "") {
+						alert("请输入密码信息");
+						return;
+					}
+					$.post("./login", {
+							"username": $.trim($("#username").val()),
+							"password": $.trim($("#password").val())
+						}, function(data) {
+						if (data == "success") {
+							window.location.href = "/rabbit/practise/index";
+						} else {
+							alert("请输入正确的帐密信息");
+						}
+					});
 				});
 			})
-			
 		</script>
 
 	</body>
