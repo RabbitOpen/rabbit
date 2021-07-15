@@ -15,11 +15,11 @@ public class UserService extends BasicService<User>  {
         createDelete().addFilter("username", "wangchengxi").execute();
         User user = new User();
         user.setUsername("xiaokunqin");
-        user.setPassword("qinqin9528");
+        user.setPassword("qinqin666");
         add(user);
         user = new User();
         user.setUsername("wangchengxi");
-        user.setPassword("wangchengxi9528");
+        user.setPassword("xixi666");
         add(user);
     }
 }
