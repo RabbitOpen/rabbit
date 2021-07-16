@@ -33,7 +33,7 @@ public class LoginController {
         long count = userService.createQuery().addFilter("username", username)
                 .addFilter("password", password).count();
         if (count == 1) {
-            request.getSession().setAttribute("user", username.trim());
+            request.getSession().setAttribute("username", username.trim());
         }
         return count == 1 ? "success" : "failed";
     }

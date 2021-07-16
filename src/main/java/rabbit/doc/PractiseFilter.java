@@ -23,7 +23,7 @@ public class PractiseFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) (servletResponse);
         String uri = request.getRequestURI();
         if (uri.startsWith("/rabbit/practise")) {
-            if (null == request.getSession().getAttribute("user")) {
+            if (null == request.getSession().getAttribute("username")) {
                 response.sendRedirect(request.getContextPath() + "/user/go2login");
             } else {
                 filterChain.doFilter(servletRequest, servletResponse);

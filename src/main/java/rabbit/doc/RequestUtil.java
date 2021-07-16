@@ -10,7 +10,8 @@ public class RequestUtil {
 
     public static HttpSession getSession() {
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-        return request.getSession();
+        HttpSession session = request.getSession();
+        return session;
     }
 
     public static String getLoginUser() {

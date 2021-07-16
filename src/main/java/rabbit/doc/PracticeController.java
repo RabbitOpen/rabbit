@@ -97,6 +97,7 @@ public class PracticeController {
     public List<Practise> practises() {
         return practiseService.createQuery().desc("id")
                 .addFilter("commitStatus", Practise.CommitStatus.COMMITTED)
+                .addFilter("username", RequestUtil.getLoginUser())
                 .page(0, 20).list();
     }
 
