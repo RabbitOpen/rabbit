@@ -119,4 +119,17 @@ public class PracticeController {
         }
         return list;
     }
+
+    @RequestMapping("/setTotal")
+    @ResponseBody
+    public int setTotal(@RequestParam("total") int total) {
+        if (!"xiaokunqin".equals(RequestUtil.getLoginUser())) {
+            return -1;
+        }
+        if (total > 30 || total < 1) {
+            total = 30;
+        }
+        practiseService.setTotal(total);
+        return total;
+    }
 }

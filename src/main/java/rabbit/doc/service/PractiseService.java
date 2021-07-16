@@ -29,6 +29,8 @@ public class PractiseService extends BasicService<Practise> {
     @Autowired
     EquationRecordService equationRecordService;
 
+    private int total = 30;
+
     @Transactional
     public List<EquationRecord> generatePractise() {
         Practise practise = new Practise();
@@ -36,8 +38,8 @@ public class PractiseService extends BasicService<Practise> {
         practise.setUsername(RequestUtil.getLoginUser());
         add(practise);
         List<EquationRecord> equations = new ArrayList<>();
-        equations.addAll(generateEquation(practise.getId(), 1, simpleAddOrMinusEquationSupplier()));
-        equations.addAll(generateEquation(practise.getId(), 1, simpleMultiAndDivEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), total / 2, simpleAddOrMinusEquationSupplier()));
+        equations.addAll(generateEquation(practise.getId(), total - total / 2, simpleMultiAndDivEquationSupplier()));
         practise.setTotal((long) equations.size());
         updateByID(practise);
         return equations;
@@ -127,5 +129,7 @@ public class PractiseService extends BasicService<Practise> {
         return equations;
     }
 
-
+    public void setTotal(int total) {
+        this.total = total;
+    }
 }
