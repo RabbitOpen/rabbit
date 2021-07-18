@@ -133,4 +133,13 @@ public class PracticeController {
         practiseService.setTotal(total);
         return total;
     }
+
+    @RequestMapping("/save")
+    @ResponseBody
+    public void save(@RequestParam("id") Long equationId, @RequestParam("value") String value) {
+        EquationRecord record = new EquationRecord();
+        record.setId(equationId);
+        record.setCommittedResult(value);
+        equationRecordService.updateByID(record);
+    }
 }

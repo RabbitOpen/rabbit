@@ -154,9 +154,14 @@
 						$(".equation-result input").unbind("focus");
 						$(".equation-content").empty();
 						for (var i = 0; i < data.length; i++) {
+						    var value = "";
+						    if (data[i].committedResult) {
+						        value = data[i].committedResult;
+						    }
 							$(".equation-content").append('<div class="equation"><font color="fuchsia">' + (i + 1) + ".</font> "+ data[i].text + '</div>');
-							$(".equation-content").append('<div class="equation-result">x&nbsp;=&nbsp;' +
-								'<input equation-id="' + data[i].id + '" type="text" style="width:110px" placeholder="---请输入答案---"/></div>');
+							$(".equation-content").append('<div class="equation-result">x&nbsp;=&nbsp;'
+								 + '<input equation-id="' + data[i].id + '" type="text" value="'
+								 + value + '" style="width:110px" placeholder="---请输入答案---"/></div>');
 							$(".equation-content").append('<div class="real-result">&nbsp;<label>' + data[i].finalResult + '</label></div>');
 						}
 						$(".equation-content").height(450);
@@ -176,6 +181,12 @@
                                 if (/[^\d]/.test($(this).val())) {
                                     var temp = $(this).val().replace(/[^\d]/g,'');
                                     $(this).val(temp);
+                                }
+                                if ($(this).val()) {
+                                    $.post("./save", {
+                                        "id": $(this).attr("equation-id"),
+                                        "value": $(this).val()
+                                    }, function(data){})
                                 }
                             });
 						});
